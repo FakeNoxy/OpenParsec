@@ -13,35 +13,41 @@
 		27E61A98292965FD00FF6563 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 27E61A97292965FD00FF6563 /* Assets.xcassets */; };
 		27E61A9B292965FD00FF6563 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 27E61A9A292965FD00FF6563 /* Preview Assets.xcassets */; };
 		27E61A9E292965FD00FF6563 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27E61A9C292965FD00FF6563 /* LaunchScreen.storyboard */; };
-		914FDDFC30ACF171000081AC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDC730ACF171000081AC /* SceneDelegate.swift */; };
-		914FDDFD30ACF171000081AC /* ParsecMetalRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDDB30ACF171000081AC /* ParsecMetalRenderer.swift */; };
-		914FDDFE30ACF171000081AC /* KeyCodeTranslators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDD830ACF171000081AC /* KeyCodeTranslators.swift */; };
-		914FDDFF30ACF171000081AC /* KeyBoardTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDC930ACF171000081AC /* KeyBoardTest.swift */; };
-		914FDE0030ACF171000081AC /* ViewContainerPatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDCC30ACF171000081AC /* ViewContainerPatch.swift */; };
-		914FDE0130ACF171000081AC /* SharedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDD230ACF171000081AC /* SharedModel.swift */; };
-		914FDE0230ACF171000081AC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDC530ACF171000081AC /* AppDelegate.swift */; };
-		914FDE0330ACF171000081AC /* SettingsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDE530ACF171000081AC /* SettingsHandler.swift */; };
-		914FDE0530ACF171000081AC /* ParsecBackgroundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDCE30ACF171000081AC /* ParsecBackgroundManager.swift */; };
-		914FDE0630ACF171000081AC /* ParsecUserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDD130ACF171000081AC /* ParsecUserData.swift */; };
-		914FDE0830ACF171000081AC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDF730ACF171000081AC /* SettingsView.swift */; };
-		914FDE0930ACF171000081AC /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDE730ACF171000081AC /* ActivityIndicator.swift */; };
-		914FDE0A30ACF171000081AC /* CParsec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDDD30ACF171000081AC /* CParsec.swift */; };
-		914FDE0B30ACF171000081AC /* NetworkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDD530ACF171000081AC /* NetworkHandler.swift */; };
-		914FDE0C30ACF171000081AC /* PictureInPictureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDCF30ACF171000081AC /* PictureInPictureManager.swift */; };
-		914FDE0D30ACF171000081AC /* GameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDD730ACF171000081AC /* GameController.swift */; };
-		914FDE0E30ACF171000081AC /* UIViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDCB30ACF171000081AC /* UIViewControllerWrapper.swift */; };
-		914FDE0F30ACF171000081AC /* ParsecViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDF030ACF171000081AC /* ParsecViewController.swift */; };
-		914FDE1030ACF171000081AC /* ParsecGLKViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDEE30ACF171000081AC /* ParsecGLKViewController.swift */; };
-		914FDE1130ACF171000081AC /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDF530ACF171000081AC /* MainView.swift */; };
-		914FDE1230ACF171000081AC /* ParsecMetalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDEF30ACF171000081AC /* ParsecMetalViewController.swift */; };
-		914FDE1330ACF171000081AC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDC630ACF171000081AC /* ContentView.swift */; };
-		914FDE1630ACF171000081AC /* ParsecSDKBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDDE30ACF171000081AC /* ParsecSDKBridge.swift */; };
-		914FDE1730ACF171000081AC /* ExUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDE830ACF171000081AC /* ExUI.swift */; };
-		914FDE1830ACF171000081AC /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDF230ACF171000081AC /* LoginView.swift */; };
-		914FDE1930ACF171000081AC /* ParsecView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDF930ACF171000081AC /* ParsecView.swift */; };
-		914FDE1A30ACF171000081AC /* TouchHandlingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDCA30ACF171000081AC /* TouchHandlingView.swift */; };
-		914FDE1B30ACF171000081AC /* ParsecGLKRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDDA30ACF171000081AC /* ParsecGLKRenderer.swift */; };
-		914FDE1C30ACF171000081AC /* URLImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDDE930ACF171000081AC /* URLImage.swift */; };
+		914FDF1B30ACF524000081AC /* PictureInPictureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEEE30ACF524000081AC /* PictureInPictureManager.swift */; };
+		914FDF1C30ACF524000081AC /* FriendInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEF430ACF524000081AC /* FriendInfo.swift */; };
+		914FDF1D30ACF524000081AC /* ParsecView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF1830ACF524000081AC /* ParsecView.swift */; };
+		914FDF1E30ACF524000081AC /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEF630ACF524000081AC /* UserInfo.swift */; };
+		914FDF1F30ACF524000081AC /* ParsecMetalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF0E30ACF524000081AC /* ParsecMetalViewController.swift */; };
+		914FDF2030ACF524000081AC /* HostInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEF530ACF524000081AC /* HostInfo.swift */; };
+		914FDF2130ACF524000081AC /* ParsecGLKViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF0D30ACF524000081AC /* ParsecGLKViewController.swift */; };
+		914FDF2230ACF524000081AC /* ParsecMetalRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEFE30ACF524000081AC /* ParsecMetalRenderer.swift */; };
+		914FDF2330ACF524000081AC /* ParsecSDKBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF0130ACF524000081AC /* ParsecSDKBridge.swift */; };
+		914FDF2430ACF524000081AC /* UIViewControllerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEE930ACF524000081AC /* UIViewControllerWrapper.swift */; };
+		914FDF2530ACF524000081AC /* GameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEFA30ACF524000081AC /* GameController.swift */; };
+		914FDF2630ACF524000081AC /* TouchHandlingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEE830ACF524000081AC /* TouchHandlingView.swift */; };
+		914FDF2730ACF524000081AC /* KeyCodeTranslators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEFB30ACF524000081AC /* KeyCodeTranslators.swift */; };
+		914FDF2830ACF524000081AC /* ParsecBackgroundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEED30ACF524000081AC /* ParsecBackgroundManager.swift */; };
+		914FDF2930ACF524000081AC /* CParsec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF0030ACF524000081AC /* CParsec.swift */; };
+		914FDF2A30ACF524000081AC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF1630ACF524000081AC /* SettingsView.swift */; };
+		914FDF2B30ACF524000081AC /* NetworkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEF830ACF524000081AC /* NetworkHandler.swift */; };
+		914FDF2C30ACF524000081AC /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF0630ACF524000081AC /* ActivityIndicator.swift */; };
+		914FDF2D30ACF524000081AC /* ParsecViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF0F30ACF524000081AC /* ParsecViewController.swift */; };
+		914FDF2E30ACF524000081AC /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF1430ACF524000081AC /* MainView.swift */; };
+		914FDF2F30ACF524000081AC /* URLImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF0830ACF524000081AC /* URLImage.swift */; };
+		914FDF3030ACF524000081AC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEE030ACF524000081AC /* AppDelegate.swift */; };
+		914FDF3130ACF524000081AC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEE130ACF524000081AC /* ContentView.swift */; };
+		914FDF3230ACF524000081AC /* ParsecUserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEF030ACF524000081AC /* ParsecUserData.swift */; };
+		914FDF3330ACF524000081AC /* ParsecGLKRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEFD30ACF524000081AC /* ParsecGLKRenderer.swift */; };
+		914FDF3430ACF524000081AC /* SharedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEF130ACF524000081AC /* SharedModel.swift */; };
+		914FDF3530ACF524000081AC /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF1130ACF524000081AC /* LoginView.swift */; };
+		914FDF3630ACF524000081AC /* NetworkWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEEC30ACF524000081AC /* NetworkWatcher.swift */; };
+		914FDF3730ACF524000081AC /* ViewContainerPatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEEA30ACF524000081AC /* ViewContainerPatch.swift */; };
+		914FDF3830ACF524000081AC /* ClientInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEF330ACF524000081AC /* ClientInfo.swift */; };
+		914FDF3930ACF524000081AC /* SettingsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF0430ACF524000081AC /* SettingsHandler.swift */; };
+		914FDF3A30ACF524000081AC /* ExUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDF0730ACF524000081AC /* ExUI.swift */; };
+		914FDF3B30ACF524000081AC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEE230ACF524000081AC /* SceneDelegate.swift */; };
+		914FDF3C30ACF524000081AC /* KeyBoardTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FDEE730ACF524000081AC /* KeyBoardTest.swift */; };
+		914FDF3D30ACF524000081AC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 914FDEE530ACF524000081AC /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,35 +74,41 @@
 		27E61A9A292965FD00FF6563 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		27E61A9D292965FD00FF6563 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		27E61A9F292965FD00FF6563 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		914FDDC530ACF171000081AC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		914FDDC630ACF171000081AC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		914FDDC730ACF171000081AC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		914FDDC930ACF171000081AC /* KeyBoardTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBoardTest.swift; sourceTree = "<group>"; };
-		914FDDCA30ACF171000081AC /* TouchHandlingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchHandlingView.swift; sourceTree = "<group>"; };
-		914FDDCB30ACF171000081AC /* UIViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerWrapper.swift; sourceTree = "<group>"; };
-		914FDDCC30ACF171000081AC /* ViewContainerPatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewContainerPatch.swift; sourceTree = "<group>"; };
-		914FDDCE30ACF171000081AC /* ParsecBackgroundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecBackgroundManager.swift; sourceTree = "<group>"; };
-		914FDDCF30ACF171000081AC /* PictureInPictureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureInPictureManager.swift; sourceTree = "<group>"; };
-		914FDDD130ACF171000081AC /* ParsecUserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecUserData.swift; sourceTree = "<group>"; };
-		914FDDD230ACF171000081AC /* SharedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedModel.swift; sourceTree = "<group>"; };
-		914FDDD530ACF171000081AC /* NetworkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHandler.swift; sourceTree = "<group>"; };
-		914FDDD730ACF171000081AC /* GameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameController.swift; sourceTree = "<group>"; };
-		914FDDD830ACF171000081AC /* KeyCodeTranslators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCodeTranslators.swift; sourceTree = "<group>"; };
-		914FDDDA30ACF171000081AC /* ParsecGLKRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecGLKRenderer.swift; sourceTree = "<group>"; };
-		914FDDDB30ACF171000081AC /* ParsecMetalRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecMetalRenderer.swift; sourceTree = "<group>"; };
-		914FDDDD30ACF171000081AC /* CParsec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CParsec.swift; sourceTree = "<group>"; };
-		914FDDDE30ACF171000081AC /* ParsecSDKBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecSDKBridge.swift; sourceTree = "<group>"; };
-		914FDDE530ACF171000081AC /* SettingsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHandler.swift; sourceTree = "<group>"; };
-		914FDDE730ACF171000081AC /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
-		914FDDE830ACF171000081AC /* ExUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExUI.swift; sourceTree = "<group>"; };
-		914FDDE930ACF171000081AC /* URLImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImage.swift; sourceTree = "<group>"; };
-		914FDDEE30ACF171000081AC /* ParsecGLKViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecGLKViewController.swift; sourceTree = "<group>"; };
-		914FDDEF30ACF171000081AC /* ParsecMetalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecMetalViewController.swift; sourceTree = "<group>"; };
-		914FDDF030ACF171000081AC /* ParsecViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecViewController.swift; sourceTree = "<group>"; };
-		914FDDF230ACF171000081AC /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		914FDDF530ACF171000081AC /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
-		914FDDF730ACF171000081AC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		914FDDF930ACF171000081AC /* ParsecView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecView.swift; sourceTree = "<group>"; };
+		914FDEE030ACF524000081AC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		914FDEE130ACF524000081AC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		914FDEE230ACF524000081AC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		914FDEE430ACF524000081AC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		914FDEE730ACF524000081AC /* KeyBoardTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBoardTest.swift; sourceTree = "<group>"; };
+		914FDEE830ACF524000081AC /* TouchHandlingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchHandlingView.swift; sourceTree = "<group>"; };
+		914FDEE930ACF524000081AC /* UIViewControllerWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerWrapper.swift; sourceTree = "<group>"; };
+		914FDEEA30ACF524000081AC /* ViewContainerPatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewContainerPatch.swift; sourceTree = "<group>"; };
+		914FDEEC30ACF524000081AC /* NetworkWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkWatcher.swift; sourceTree = "<group>"; };
+		914FDEED30ACF524000081AC /* ParsecBackgroundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecBackgroundManager.swift; sourceTree = "<group>"; };
+		914FDEEE30ACF524000081AC /* PictureInPictureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureInPictureManager.swift; sourceTree = "<group>"; };
+		914FDEF030ACF524000081AC /* ParsecUserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecUserData.swift; sourceTree = "<group>"; };
+		914FDEF130ACF524000081AC /* SharedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedModel.swift; sourceTree = "<group>"; };
+		914FDEF330ACF524000081AC /* ClientInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientInfo.swift; sourceTree = "<group>"; };
+		914FDEF430ACF524000081AC /* FriendInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendInfo.swift; sourceTree = "<group>"; };
+		914FDEF530ACF524000081AC /* HostInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostInfo.swift; sourceTree = "<group>"; };
+		914FDEF630ACF524000081AC /* UserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
+		914FDEF830ACF524000081AC /* NetworkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHandler.swift; sourceTree = "<group>"; };
+		914FDEFA30ACF524000081AC /* GameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameController.swift; sourceTree = "<group>"; };
+		914FDEFB30ACF524000081AC /* KeyCodeTranslators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCodeTranslators.swift; sourceTree = "<group>"; };
+		914FDEFD30ACF524000081AC /* ParsecGLKRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecGLKRenderer.swift; sourceTree = "<group>"; };
+		914FDEFE30ACF524000081AC /* ParsecMetalRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecMetalRenderer.swift; sourceTree = "<group>"; };
+		914FDF0030ACF524000081AC /* CParsec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CParsec.swift; sourceTree = "<group>"; };
+		914FDF0130ACF524000081AC /* ParsecSDKBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecSDKBridge.swift; sourceTree = "<group>"; };
+		914FDF0430ACF524000081AC /* SettingsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHandler.swift; sourceTree = "<group>"; };
+		914FDF0630ACF524000081AC /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
+		914FDF0730ACF524000081AC /* ExUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExUI.swift; sourceTree = "<group>"; };
+		914FDF0830ACF524000081AC /* URLImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImage.swift; sourceTree = "<group>"; };
+		914FDF0D30ACF524000081AC /* ParsecGLKViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecGLKViewController.swift; sourceTree = "<group>"; };
+		914FDF0E30ACF524000081AC /* ParsecMetalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecMetalViewController.swift; sourceTree = "<group>"; };
+		914FDF0F30ACF524000081AC /* ParsecViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecViewController.swift; sourceTree = "<group>"; };
+		914FDF1130ACF524000081AC /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		914FDF1430ACF524000081AC /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		914FDF1630ACF524000081AC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		914FDF1830ACF524000081AC /* ParsecView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsecView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,17 +152,18 @@
 		27E61A90292965FC00FF6563 /* OpenParsec */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDC830ACF171000081AC /* App */,
-				914FDDCD30ACF171000081AC /* Helpers */,
-				914FDDD030ACF171000081AC /* Managers */,
-				914FDDD330ACF171000081AC /* Models */,
-				914FDDD630ACF171000081AC /* Network */,
-				914FDDE430ACF171000081AC /* Parsec */,
-				914FDDE630ACF171000081AC /* Settings */,
-				914FDDEB30ACF171000081AC /* UI */,
-				914FDDED30ACF171000081AC /* Utilities */,
-				914FDDF130ACF171000081AC /* ViewControllers */,
-				914FDDFB30ACF171000081AC /* Views */,
+				914FDEE330ACF524000081AC /* App */,
+				914FDEE630ACF524000081AC /* Base.lproj */,
+				914FDEEB30ACF524000081AC /* Helpers */,
+				914FDEEF30ACF524000081AC /* Managers */,
+				914FDEF230ACF524000081AC /* Models */,
+				914FDEF930ACF524000081AC /* Network */,
+				914FDF0330ACF524000081AC /* Parsec */,
+				914FDF0530ACF524000081AC /* Settings */,
+				914FDF0A30ACF524000081AC /* UI */,
+				914FDF0C30ACF524000081AC /* Utilities */,
+				914FDF1030ACF524000081AC /* ViewControllers */,
+				914FDF1A30ACF524000081AC /* Views */,
 				27E61A97292965FD00FF6563 /* Assets.xcassets */,
 				27899AC5292FE2A9001ACA33 /* audio.c */,
 				27899AC6292FE2A9001ACA33 /* audio.h */,
@@ -170,196 +183,209 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		914FDDC830ACF171000081AC /* App */ = {
+		914FDEE330ACF524000081AC /* App */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDC530ACF171000081AC /* AppDelegate.swift */,
-				914FDDC630ACF171000081AC /* ContentView.swift */,
-				914FDDC730ACF171000081AC /* SceneDelegate.swift */,
+				914FDEE030ACF524000081AC /* AppDelegate.swift */,
+				914FDEE130ACF524000081AC /* ContentView.swift */,
+				914FDEE230ACF524000081AC /* SceneDelegate.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
 		};
-		914FDDCD30ACF171000081AC /* Helpers */ = {
+		914FDEE630ACF524000081AC /* Base.lproj */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDC930ACF171000081AC /* KeyBoardTest.swift */,
-				914FDDCA30ACF171000081AC /* TouchHandlingView.swift */,
-				914FDDCB30ACF171000081AC /* UIViewControllerWrapper.swift */,
-				914FDDCC30ACF171000081AC /* ViewContainerPatch.swift */,
+				914FDEE530ACF524000081AC /* LaunchScreen.storyboard */,
+			);
+			path = Base.lproj;
+			sourceTree = "<group>";
+		};
+		914FDEEB30ACF524000081AC /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				914FDEE730ACF524000081AC /* KeyBoardTest.swift */,
+				914FDEE830ACF524000081AC /* TouchHandlingView.swift */,
+				914FDEE930ACF524000081AC /* UIViewControllerWrapper.swift */,
+				914FDEEA30ACF524000081AC /* ViewContainerPatch.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		914FDDD030ACF171000081AC /* Managers */ = {
+		914FDEEF30ACF524000081AC /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDCE30ACF171000081AC /* ParsecBackgroundManager.swift */,
-				914FDDCF30ACF171000081AC /* PictureInPictureManager.swift */,
+				914FDEEC30ACF524000081AC /* NetworkWatcher.swift */,
+				914FDEED30ACF524000081AC /* ParsecBackgroundManager.swift */,
+				914FDEEE30ACF524000081AC /* PictureInPictureManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
 		};
-		914FDDD330ACF171000081AC /* Models */ = {
+		914FDEF230ACF524000081AC /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDD130ACF171000081AC /* ParsecUserData.swift */,
-				914FDDD230ACF171000081AC /* SharedModel.swift */,
+				914FDEF030ACF524000081AC /* ParsecUserData.swift */,
+				914FDEF130ACF524000081AC /* SharedModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		914FDDD430ACF171000081AC /* Models */ = {
+		914FDEF730ACF524000081AC /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				914FDEF330ACF524000081AC /* ClientInfo.swift */,
+				914FDEF430ACF524000081AC /* FriendInfo.swift */,
+				914FDEF530ACF524000081AC /* HostInfo.swift */,
+				914FDEF630ACF524000081AC /* UserInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		914FDDD630ACF171000081AC /* Network */ = {
+		914FDEF930ACF524000081AC /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDD430ACF171000081AC /* Models */,
-				914FDDD530ACF171000081AC /* NetworkHandler.swift */,
+				914FDEF730ACF524000081AC /* Models */,
+				914FDEF830ACF524000081AC /* NetworkHandler.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
 		};
-		914FDDD930ACF171000081AC /* Input */ = {
+		914FDEFC30ACF524000081AC /* Input */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDD730ACF171000081AC /* GameController.swift */,
-				914FDDD830ACF171000081AC /* KeyCodeTranslators.swift */,
+				914FDEFA30ACF524000081AC /* GameController.swift */,
+				914FDEFB30ACF524000081AC /* KeyCodeTranslators.swift */,
 			);
 			path = Input;
 			sourceTree = "<group>";
 		};
-		914FDDDC30ACF171000081AC /* Rendering */ = {
+		914FDEFF30ACF524000081AC /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDDA30ACF171000081AC /* ParsecGLKRenderer.swift */,
-				914FDDDB30ACF171000081AC /* ParsecMetalRenderer.swift */,
+				914FDEFD30ACF524000081AC /* ParsecGLKRenderer.swift */,
+				914FDEFE30ACF524000081AC /* ParsecMetalRenderer.swift */,
 			);
 			path = Rendering;
 			sourceTree = "<group>";
 		};
-		914FDDDF30ACF171000081AC /* SDK */ = {
+		914FDF0230ACF524000081AC /* SDK */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDDD30ACF171000081AC /* CParsec.swift */,
-				914FDDDE30ACF171000081AC /* ParsecSDKBridge.swift */,
+				914FDF0030ACF524000081AC /* CParsec.swift */,
+				914FDF0130ACF524000081AC /* ParsecSDKBridge.swift */,
 			);
 			path = SDK;
 			sourceTree = "<group>";
 		};
-		914FDDE430ACF171000081AC /* Parsec */ = {
+		914FDF0330ACF524000081AC /* Parsec */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDD930ACF171000081AC /* Input */,
-				914FDDDC30ACF171000081AC /* Rendering */,
-				914FDDDF30ACF171000081AC /* SDK */,
+				914FDEFC30ACF524000081AC /* Input */,
+				914FDEFF30ACF524000081AC /* Rendering */,
+				914FDF0230ACF524000081AC /* SDK */,
 			);
 			path = Parsec;
 			sourceTree = "<group>";
 		};
-		914FDDE630ACF171000081AC /* Settings */ = {
+		914FDF0530ACF524000081AC /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDE530ACF171000081AC /* SettingsHandler.swift */,
+				914FDF0430ACF524000081AC /* SettingsHandler.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		914FDDEA30ACF171000081AC /* Components */ = {
+		914FDF0930ACF524000081AC /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDE730ACF171000081AC /* ActivityIndicator.swift */,
-				914FDDE830ACF171000081AC /* ExUI.swift */,
-				914FDDE930ACF171000081AC /* URLImage.swift */,
+				914FDF0630ACF524000081AC /* ActivityIndicator.swift */,
+				914FDF0730ACF524000081AC /* ExUI.swift */,
+				914FDF0830ACF524000081AC /* URLImage.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
 		};
-		914FDDEB30ACF171000081AC /* UI */ = {
+		914FDF0A30ACF524000081AC /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDEA30ACF171000081AC /* Components */,
+				914FDF0930ACF524000081AC /* Components */,
 			);
 			path = UI;
 			sourceTree = "<group>";
 		};
-		914FDDEC30ACF171000081AC /* Extensions */ = {
+		914FDF0B30ACF524000081AC /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		914FDDED30ACF171000081AC /* Utilities */ = {
+		914FDF0C30ACF524000081AC /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDEC30ACF171000081AC /* Extensions */,
+				914FDF0B30ACF524000081AC /* Extensions */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
 		};
-		914FDDF130ACF171000081AC /* ViewControllers */ = {
+		914FDF1030ACF524000081AC /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDEE30ACF171000081AC /* ParsecGLKViewController.swift */,
-				914FDDEF30ACF171000081AC /* ParsecMetalViewController.swift */,
-				914FDDF030ACF171000081AC /* ParsecViewController.swift */,
+				914FDF0D30ACF524000081AC /* ParsecGLKViewController.swift */,
+				914FDF0E30ACF524000081AC /* ParsecMetalViewController.swift */,
+				914FDF0F30ACF524000081AC /* ParsecViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
-		914FDDF330ACF171000081AC /* Login */ = {
+		914FDF1230ACF524000081AC /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDF230ACF171000081AC /* LoginView.swift */,
+				914FDF1130ACF524000081AC /* LoginView.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
 		};
-		914FDDF430ACF171000081AC /* Components */ = {
+		914FDF1330ACF524000081AC /* Components */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			path = Components;
 			sourceTree = "<group>";
 		};
-		914FDDF630ACF171000081AC /* Main */ = {
+		914FDF1530ACF524000081AC /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDF430ACF171000081AC /* Components */,
-				914FDDF530ACF171000081AC /* MainView.swift */,
+				914FDF1330ACF524000081AC /* Components */,
+				914FDF1430ACF524000081AC /* MainView.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
 		};
-		914FDDF830ACF171000081AC /* Settings */ = {
+		914FDF1730ACF524000081AC /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDF730ACF171000081AC /* SettingsView.swift */,
+				914FDF1630ACF524000081AC /* SettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		914FDDFA30ACF171000081AC /* Stream */ = {
+		914FDF1930ACF524000081AC /* Stream */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDF930ACF171000081AC /* ParsecView.swift */,
+				914FDF1830ACF524000081AC /* ParsecView.swift */,
 			);
 			path = Stream;
 			sourceTree = "<group>";
 		};
-		914FDDFB30ACF171000081AC /* Views */ = {
+		914FDF1A30ACF524000081AC /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				914FDDF330ACF171000081AC /* Login */,
-				914FDDF630ACF171000081AC /* Main */,
-				914FDDF830ACF171000081AC /* Settings */,
-				914FDDFA30ACF171000081AC /* Stream */,
+				914FDF1230ACF524000081AC /* Login */,
+				914FDF1530ACF524000081AC /* Main */,
+				914FDF1730ACF524000081AC /* Settings */,
+				914FDF1930ACF524000081AC /* Stream */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -429,6 +455,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				27E61A9E292965FD00FF6563 /* LaunchScreen.storyboard in Resources */,
+				914FDF3D30ACF524000081AC /* LaunchScreen.storyboard in Resources */,
 				27E61A9B292965FD00FF6563 /* Preview Assets.xcassets in Resources */,
 				27E61A98292965FD00FF6563 /* Assets.xcassets in Resources */,
 			);
@@ -461,36 +488,41 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				914FDDFC30ACF171000081AC /* SceneDelegate.swift in Sources */,
-				914FDDFD30ACF171000081AC /* ParsecMetalRenderer.swift in Sources */,
-				914FDDFE30ACF171000081AC /* KeyCodeTranslators.swift in Sources */,
-				914FDDFF30ACF171000081AC /* KeyBoardTest.swift in Sources */,
-				914FDE0030ACF171000081AC /* ViewContainerPatch.swift in Sources */,
-				914FDE0130ACF171000081AC /* SharedModel.swift in Sources */,
-				914FDE0230ACF171000081AC /* AppDelegate.swift in Sources */,
-				914FDE0330ACF171000081AC /* SettingsHandler.swift in Sources */,
-				914FDE0530ACF171000081AC /* ParsecBackgroundManager.swift in Sources */,
-				914FDE0630ACF171000081AC /* ParsecUserData.swift in Sources */,
-				914FDE0830ACF171000081AC /* SettingsView.swift in Sources */,
-				914FDE0930ACF171000081AC /* ActivityIndicator.swift in Sources */,
-				914FDE0A30ACF171000081AC /* CParsec.swift in Sources */,
-				914FDE0B30ACF171000081AC /* NetworkHandler.swift in Sources */,
-				914FDE0C30ACF171000081AC /* PictureInPictureManager.swift in Sources */,
-				914FDE0D30ACF171000081AC /* GameController.swift in Sources */,
-				914FDE0E30ACF171000081AC /* UIViewControllerWrapper.swift in Sources */,
-				914FDE0F30ACF171000081AC /* ParsecViewController.swift in Sources */,
-				914FDE1030ACF171000081AC /* ParsecGLKViewController.swift in Sources */,
-				914FDE1130ACF171000081AC /* MainView.swift in Sources */,
-				914FDE1230ACF171000081AC /* ParsecMetalViewController.swift in Sources */,
-				914FDE1330ACF171000081AC /* ContentView.swift in Sources */,
-				914FDE1630ACF171000081AC /* ParsecSDKBridge.swift in Sources */,
-				914FDE1730ACF171000081AC /* ExUI.swift in Sources */,
-				914FDE1830ACF171000081AC /* LoginView.swift in Sources */,
-				914FDE1930ACF171000081AC /* ParsecView.swift in Sources */,
-				914FDE1A30ACF171000081AC /* TouchHandlingView.swift in Sources */,
-				914FDE1B30ACF171000081AC /* ParsecGLKRenderer.swift in Sources */,
-				914FDE1C30ACF171000081AC /* URLImage.swift in Sources */,
 				27899AC7292FE2A9001ACA33 /* audio.c in Sources */,
+				914FDF1B30ACF524000081AC /* PictureInPictureManager.swift in Sources */,
+				914FDF1C30ACF524000081AC /* FriendInfo.swift in Sources */,
+				914FDF1D30ACF524000081AC /* ParsecView.swift in Sources */,
+				914FDF1E30ACF524000081AC /* UserInfo.swift in Sources */,
+				914FDF1F30ACF524000081AC /* ParsecMetalViewController.swift in Sources */,
+				914FDF2030ACF524000081AC /* HostInfo.swift in Sources */,
+				914FDF2130ACF524000081AC /* ParsecGLKViewController.swift in Sources */,
+				914FDF2230ACF524000081AC /* ParsecMetalRenderer.swift in Sources */,
+				914FDF2330ACF524000081AC /* ParsecSDKBridge.swift in Sources */,
+				914FDF2430ACF524000081AC /* UIViewControllerWrapper.swift in Sources */,
+				914FDF2530ACF524000081AC /* GameController.swift in Sources */,
+				914FDF2630ACF524000081AC /* TouchHandlingView.swift in Sources */,
+				914FDF2730ACF524000081AC /* KeyCodeTranslators.swift in Sources */,
+				914FDF2830ACF524000081AC /* ParsecBackgroundManager.swift in Sources */,
+				914FDF2930ACF524000081AC /* CParsec.swift in Sources */,
+				914FDF2A30ACF524000081AC /* SettingsView.swift in Sources */,
+				914FDF2B30ACF524000081AC /* NetworkHandler.swift in Sources */,
+				914FDF2C30ACF524000081AC /* ActivityIndicator.swift in Sources */,
+				914FDF2D30ACF524000081AC /* ParsecViewController.swift in Sources */,
+				914FDF2E30ACF524000081AC /* MainView.swift in Sources */,
+				914FDF2F30ACF524000081AC /* URLImage.swift in Sources */,
+				914FDF3030ACF524000081AC /* AppDelegate.swift in Sources */,
+				914FDF3130ACF524000081AC /* ContentView.swift in Sources */,
+				914FDF3230ACF524000081AC /* ParsecUserData.swift in Sources */,
+				914FDF3330ACF524000081AC /* ParsecGLKRenderer.swift in Sources */,
+				914FDF3430ACF524000081AC /* SharedModel.swift in Sources */,
+				914FDF3530ACF524000081AC /* LoginView.swift in Sources */,
+				914FDF3630ACF524000081AC /* NetworkWatcher.swift in Sources */,
+				914FDF3730ACF524000081AC /* ViewContainerPatch.swift in Sources */,
+				914FDF3830ACF524000081AC /* ClientInfo.swift in Sources */,
+				914FDF3930ACF524000081AC /* SettingsHandler.swift in Sources */,
+				914FDF3A30ACF524000081AC /* ExUI.swift in Sources */,
+				914FDF3B30ACF524000081AC /* SceneDelegate.swift in Sources */,
+				914FDF3C30ACF524000081AC /* KeyBoardTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -501,6 +533,14 @@
 			isa = PBXVariantGroup;
 			children = (
 				27E61A9D292965FD00FF6563 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		914FDEE530ACF524000081AC /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				914FDEE430ACF524000081AC /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -636,7 +676,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"OpenParsec/Preview Content\"";
-				DEVELOPMENT_TEAM = 3C3YHUUV75;
+				DEVELOPMENT_TEAM = VDDZ9Q7HQ2;
 				ENABLE_PREVIEWS = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = OpenParsec/Info.plist;
