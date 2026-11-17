@@ -235,7 +235,10 @@ struct ParsecStatusBar: View {
 				ParsecView.getHostUserData()
 				// SDK forgets stream dims on reconnect, re-send them so the frame fills not corners
 				if let vc = parsecViewController {
-					CParsec.setFrame(vc.view.bounds.width, vc.view.bounds.height, UIScreen.main.scale)
+
+					// iPhone Duo: get scale from the view's screen, not UIScreen.main
+					let scale = vc.view.window?.screen.scale ?? 2.0
+					CParsec.setFrame(vc.view.bounds.width, vc.view.bounds.height, scale)
 				}
 			}
 			if CParsec.runningRenderer != .metal || CACurrentMediaTime() - liveSince! > 6 {
@@ -717,10 +720,10 @@ struct ParsecView: View {
 		if muted { CParsec.pause(video: false, audio: true) }
 		parsecViewController.setZoomEnabled(zoomEnabled)
 
-		DataManager.model.constantFps = SettingsHandler.constantFps
 
 		let screenSize: CGSize = self.parsecViewController.view.frame.size
-		let scaleFactor = UIScreen.main.nativeScale
+		// iPhone Duo: get scale from the view's screen, not UIScreen.main
+		let scaleFactor = self.parsecViewController.view.window?.screen.nativeScale ?? 2.0
 		ParsecResolution.updateClientResolution(width: Int(screenSize.width * scaleFactor), height: Int(screenSize.height * scaleFactor))
 
 		ParsecView.getHostUserData()
