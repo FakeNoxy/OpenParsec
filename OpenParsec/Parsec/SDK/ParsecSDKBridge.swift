@@ -38,7 +38,8 @@ class ParsecSDKBridge: ParsecService {
 			generationLock.unlock()
 		}
 	}
-	var didSetResolution = false
+	/// Decodes host user-data events (see `UserDataHandler`).
+	private var userDataHandler: UserDataHandler?
 	private var didReleaseOnConnect = false
 	private var capsLock = false
 
@@ -80,6 +81,9 @@ class ParsecSDKBridge: ParsecService {
 			print("error: \(error)")
 		}
 
+		if _parsec != nil {
+			userDataHandler = UserDataHandler(_parsec)
+		}
 	}
 
 	deinit {
@@ -132,7 +136,7 @@ class ParsecSDKBridge: ParsecService {
 	func reconnect(_ peerID: String) -> ParsecStatus {
 		sendReleaseMessage()
 		pollGeneration += 1
-		didSetResolution = false
+		userDataHandler?.resetResolutionLatch()
 		ParsecClientDisconnect(_parsec)
 		audio_clear(&_audio)
 		audio_hold(false, _audioPtr)
@@ -270,58 +274,7 @@ class ParsecSDKBridge: ParsecService {
 	}
 
 	func handleUserDataEvent(event: ParsecClientUserDataEvent) {
-
-		let pointer = ParsecGetBuffer(_parsec, event.key)
-		if pointer == nil {
-			return
-		}
-		switch event.id {
-		case 11:
-			do {
-				let decoder = JSONDecoder()
-				let config = try decoder.decode(ParsecUserDataVideoConfig.self, from: Data(bytesNoCopy: pointer!, count: strlen(pointer!), deallocator: .none))
-				let videoConfig = config.video.first
-				DispatchQueue.main.async {
-					if let cfg = videoConfig {
-						StreamSessionState.shared.resolutionX = cfg.resolutionX
-						StreamSessionState.shared.resolutionY = cfg.resolutionY
-						StreamSessionState.shared.bitrate = cfg.encoderMaxBitrate
-						StreamSessionState.shared.constantFps = cfg.fullFPS
-					}
-					if !self.didSetResolution {
-						self.didSetResolution = true
-						if StreamSessionState.shared.hostDefaultBitrate == 0 {
-							StreamSessionState.shared.hostDefaultBitrate = StreamSessionState.shared.bitrate
-						}
-						StreamSessionState.shared.resolutionX = SettingsStore.shared.resolution.width
-						StreamSessionState.shared.resolutionY = SettingsStore.shared.resolution.height
-						StreamSessionState.shared.constantFps = SettingsStore.shared.constantFps
-						if SettingsStore.shared.bitrate > 0 {
-							StreamSessionState.shared.bitrate = SettingsStore.shared.bitrate
-						}
-						self.updateHostVideoConfig()
-					}
-				}
-
-			} catch {
-				print("error while parsing user data: \(error.localizedDescription)")
-			}
-		case 12:
-			do {
-				let decoder = JSONDecoder()
-				let config = try decoder.decode(Array<ParsecDisplayConfig>.self, from: Data(bytesNoCopy: pointer!, count: strlen(pointer!), deallocator: .none))
-				DispatchQueue.main.async {
-					StreamSessionState.shared.displayConfigs = config
-				}
-			} catch {
-				print("error while parsing user data: \(error.localizedDescription)")
-			}
-		default:
-			break
-		}
-
-		ParsecFree(pointer)
-
+		userDataHandler?.handle(event: event)
 	}
 
 	func handleCursorEvent(event: ParsecClientCursorEvent, sawCursor: inout Bool) {
@@ -444,32 +397,7 @@ class ParsecSDKBridge: ParsecService {
 	}
 
 	func getKeyCodeByText(text: String) -> (ParsecKeycode?, Bool) {
-		var keyCode: ParsecKeycode?
-		var useShift = false
-		if text.count == 1 {
-			let char = Character(text)
-			if char.isLetter || char.isNumber {
-				keyCode = KeyCodeTranslators.parsecKeyCodeTranslator(text.uppercased())
-				if char.isUppercase {
-					useShift = true
-				}
-			} else if char.isNewline {
-				keyCode = ParsecKeycode(40)
-			} else if char.isWhitespace {
-				keyCode = ParsecKeycode(44)
-			} else {
-				let (keycodeRaw, keyMod) = KeyCodeTranslators.getParsecKeycode(for: text)
-				if keycodeRaw != -1 {
-					keyCode = ParsecKeycode(UInt32(keycodeRaw))
-					if keyMod {
-						useShift = true
-					}
-				}
-			}
-		} else {
-			keyCode = KeyCodeTranslators.parsecKeyCodeTranslator(text)
-		}
-
+		let (keyCode, useShift) = TextKeycodeResolver.resolve(text: text)
 		return (keyCode, useShift)
 	}
 
@@ -601,8 +529,8 @@ class ParsecSDKBridge: ParsecService {
 			}
 		}
 
-		DispatchQueue.global().async(execute: audio)
-		DispatchQueue.global().async(execute: event)
+		DispatchQueue(label: "parsec.poll.audio", qos: .utility).async(execute: audio)
+		DispatchQueue(label: "parsec.poll.event", qos: .utility).async(execute: event)
 	}
 
 	func sendUserData(type: ParsecUserDataType, message: Data) {

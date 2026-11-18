@@ -1,15 +1,80 @@
 import UIKit
 import AVFoundation
-import GLKit
-
-protocol RenderLoop: AnyObject {
-	var isPaused: Bool { get set }
-}
-
-extension GLKViewController: RenderLoop {}
 
 class ParsecBackgroundManager {
 	static let shared = ParsecBackgroundManager()
+
+	/// Events the manager can emit to subscribers. Replaces the former seven
+	/// separate closure callbacks (`onShouldReconnect`, `onShortcutReconnect`,
+	/// `onShouldDisconnect`, `onResumeEndedSession`, `onEndedInBackground`,
+	/// `onNextFrame`).
+	enum Event {
+		case shouldReconnect(peerId: String)
+		case shortcutReconnect
+		case shouldDisconnect
+		case resumeEndedSession
+		case endedInBackground
+		case nextFrame
+	}
+
+	/// Token returned by `addEventHandler`, used to remove a specific handler.
+	struct EventToken: Hashable {
+		let id = UUID()
+	}
+
+	/// Multi-subscriber event registry. Several subscribers may listen at the
+	/// same time to different events (e.g. `MainViewModel` handles
+	/// `.shouldReconnect`/`.shortcutReconnect` while the stream UI handles
+	/// `.endedInBackground`/`.resumeEndedSession`/`.nextFrame`). Each handler
+	/// filters for the cases it cares about.
+	private var eventHandlers: [UUID: (Event) -> Void] = [:]
+	private let eventLock = NSLock()
+
+	/// Convenience single-subscriber accessor. Setting it replaces all existing
+	/// handlers; setting `nil` removes all. For the multi-subscriber case the
+	/// codebase actually needs, prefer `addEventHandler`/`removeEventHandler`.
+	var onEvent: ((Event) -> Void)? {
+		get {
+			eventLock.lock()
+			defer { eventLock.unlock() }
+			return eventHandlers.values.first
+		}
+		set {
+			eventLock.lock()
+			defer { eventLock.unlock() }
+			eventHandlers.removeAll()
+			if let handler = newValue {
+				eventHandlers[UUID()] = handler
+			}
+		}
+	}
+
+	/// Mirrors the old `onShortcutReconnect != nil` guard the scene delegate used
+	/// to decide whether the app shortcut was actionable.
+	var canShortcutReconnect = false
+
+	@discardableResult
+	func addEventHandler(_ handler: @escaping (Event) -> Void) -> EventToken {
+		let token = EventToken()
+		eventLock.lock()
+		defer { eventLock.unlock() }
+		eventHandlers[token.id] = handler
+		return token
+	}
+
+	func removeEventHandler(_ token: EventToken) {
+		eventLock.lock()
+		defer { eventLock.unlock() }
+		eventHandlers[token.id] = nil
+	}
+
+	/// Emit an event to all registered handlers.
+	func emit(_ event: Event) {
+		eventLock.lock()
+		let handlers = Array(eventHandlers.values)
+		eventLock.unlock()
+		handlers.forEach { $0(event) }
+	}
 
 	private(set) var hasActiveConnection = false
 	private(set) var endedByUser = false
@@ -35,16 +100,12 @@ class ParsecBackgroundManager {
 	private var holdTask: UIBackgroundTaskIdentifier = .invalid
 	private var backgroundAt: Date?
 	private var endedInBackground = false
-	var onResumeEndedSession: (() -> Void)?
-	var onEndedInBackground: (() -> Void)?
-	var onNextFrame: (() -> Void)?
-	weak var glkViewController: RenderLoop?
+	/// The active render surface (a `GLKViewController` or an `MTKView`).
+	/// Renamed from `glkViewController` — it is not always a GLKViewController.
+	weak var renderLoop: RenderLoop?
 
-	var onShouldReconnect: ((String) -> Void)?
-	var onShortcutReconnect: (() -> Void)?
 	var reconnectPending = false
 	static let reconnectShortcut = "reconnect"
-	var onShouldDisconnect: (() -> Void)?
 
 	var isMarkedForReconnect: Bool {
 		return didDisconnectDueToBackground || isReconnecting
@@ -95,7 +156,7 @@ class ParsecBackgroundManager {
 			isReconnecting = true
 
 			DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-				self?.onShouldReconnect?(peerId)
+				self?.emit(.shouldReconnect(peerId: peerId))
 			}
 		}
 	}
@@ -131,7 +192,7 @@ class ParsecBackgroundManager {
 			CParsec.disconnect()
 			isPaused = true
 			endedInBackground = true
-			onEndedInBackground?()
+			emit(.endedInBackground)
 			RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.2))
 			for scene in UIApplication.shared.connectedScenes {
 				UIApplication.shared.requestSceneSessionRefresh(scene.session)
@@ -154,8 +215,8 @@ class ParsecBackgroundManager {
 			endedInBackground = false
 			isPaused = false
 			appNote("[foreground] stream ended in the background")
-			glkViewController?.isPaused = false
-			onResumeEndedSession?()
+			renderLoop?.isPaused = false
+			emit(.resumeEndedSession)
 		} else if hasActiveConnection {
 			appNote("[foreground] stream held, resuming")
 		}

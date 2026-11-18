@@ -5,26 +5,14 @@ import AVFoundation
 
 extension ParsecView {
 	func post() {
-		ParsecBackgroundManager.shared.onShouldDisconnect = {
-			NotificationCenter.default.post(name: NSNotification.Name("ParsecBackgroundDisconnect"), object: nil)
-		}
-		ParsecBackgroundManager.shared.onEndedInBackground = { [self] in
-			ParsecBackgroundManager.shared.onNextFrame = nil
-			waitingForStream = false
-			if showDCAlert || waitingForNetwork { return }
-			isReconnecting = true
-		}
-		ParsecBackgroundManager.shared.onResumeEndedSession = { [self] in
-			if showDCAlert || waitingForNetwork { return }
-			guard let peerId = ParsecBackgroundManager.shared.lastPeerId else { return }
-			appNote("[reconnect] back from the background, reconnecting")
-			reconnectTo(peerId)
-			ParsecBackgroundManager.shared.reconnectAttempts = 1
-		}
+		// Wire the reconnect/disconnect state machine to this live stream view.
+		// Registers the single event handler that replaces the former
+		// onShouldDisconnect / onEndedInBackground / onResumeEndedSession / onNextFrame.
+		reconnect.attach(viewController: parsecViewController, contentController: controller)
 		if #available(iOS 15.0, *) {
 			PictureInPictureManager.shared.onPiPStopped = { [self] in
 				if UIApplication.shared.applicationState != .active {
-					ParsecBackgroundManager.shared.glkViewController?.isPaused = true
+					ParsecBackgroundManager.shared.renderLoop?.isPaused = true
 					CParsec.sendReleaseMessage()
 					CParsec.pause()
 					ParsecBackgroundManager.shared.isPaused = true
@@ -43,14 +31,14 @@ extension ParsecView {
 						try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
 						ParsecBackgroundManager.shared.markForReconnect()
 						DispatchQueue.main.async {
-							self.disconnect(isBackgroundDisconnect: true)
+							self.reconnect.disconnect(isBackgroundDisconnect: true)
 						}
 					}
 				}
 			}
 			PictureInPictureManager.shared.onPiPStartFailed = {
 				if UIApplication.shared.applicationState != .active {
-					ParsecBackgroundManager.shared.glkViewController?.isPaused = true
+					ParsecBackgroundManager.shared.renderLoop?.isPaused = true
 					CParsec.sendReleaseMessage()
 					CParsec.pause()
 					ParsecBackgroundManager.shared.isPaused = true
@@ -143,7 +131,7 @@ extension ParsecView {
 		if SettingsStore.shared.preferredFramesPerSecond != fpsAtOpen { parsecViewController.applyFrameRate() }
 		if SettingsStore.shared.enablePiP != pipAtOpen {
 			ParsecBackgroundManager.shared.reconnectPending = true
-			disconnect()
+			reconnect.disconnect()
 		} else if SettingsStore.shared.decoder != decoderAtOpen {
 			reconnectToApply()
 		}
@@ -152,15 +140,7 @@ extension ParsecView {
 	func reconnectToApply() {
 		guard let peerId = ParsecBackgroundManager.shared.lastPeerId else { return }
 		appNote("[reconnect] to apply settings")
-		reconnectTo(peerId)
-	}
-
-	func reconnectTo(_ peerId: String) {
-		isReconnecting = true
-		ParsecBackgroundManager.shared.reconnectAttempts = 0
-		parsecViewController.resetKeyState()
-		CParsec.reconnect(peerId)
-		ParsecBackgroundManager.shared.reconnectStartTime = Date()
+		reconnect.reconnectTo(peerId)
 	}
 
 	func disableOverlay() {
@@ -194,33 +174,6 @@ extension ParsecView {
 		}
 	}
 
-
-	func disconnect(isBackgroundDisconnect: Bool = false) {
-		appNote("[stream] disconnect\(isBackgroundDisconnect ? " in the background" : "")")
-		if !isBackgroundDisconnect {
-			ParsecBackgroundManager.shared.endSession()
-		}
-		ParsecBackgroundManager.shared.onResumeEndedSession = nil
-		ParsecBackgroundManager.shared.onEndedInBackground = nil
-		ParsecBackgroundManager.shared.onNextFrame = nil
-
-		if #available(iOS 15.0, *) {
-			PictureInPictureManager.shared.teardown()
-		}
-
-		CParsec.sendReleaseMessage()
-		CParsec.disconnect()
-		StreamSessionState.shared.output = "none"
-		CParsec.drawRate = 0
-		self.parsecViewController.glkView.cleanUp()
-
-		parsecViewController.scrollView.zoomScale = 1.0
-		parsecViewController.scrollView.contentOffset = .zero
-
-		if let c = controller {
-			c.setView(.main)
-		}
-	}
 
 	func changeResolution(res: ParsecResolution) {
         SettingsStore.shared.resolution = res

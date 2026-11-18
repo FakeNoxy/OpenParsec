@@ -1,6 +1,9 @@
 import UIKit
 import ParsecSDK
 
+// MARK: - Keyboard Scrolling
+
+/// Software-keyboard layout and scroll adjustments for the stream view.
 extension ParsecViewController {
 	@objc func keyboardWillShow(notification: NSNotification) {
 		if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {

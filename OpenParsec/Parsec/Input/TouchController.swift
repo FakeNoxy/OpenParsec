@@ -1,6 +1,7 @@
 import ParsecSDK
 import UIKit
 
+/// Translates touch/tap gestures into Parsec mouse input.
 class TouchController {
 
 	func onTouch(typeOfTap: Int, location: CGPoint, state: UIGestureRecognizer.State) {

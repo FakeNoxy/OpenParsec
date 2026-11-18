@@ -84,10 +84,7 @@ class ParsecMetalRenderer: NSObject, MTKViewDelegate {
 	}
 
 	fileprivate func upload(_ f: ParsecFrame, _ image: UnsafeRawPointer) {
-		if let next = ParsecBackgroundManager.shared.onNextFrame {
-			ParsecBackgroundManager.shared.onNextFrame = nil
-			next()
-		}
+		ParsecBackgroundManager.shared.emit(.nextFrame)
 		let w = Int(f.width), h = Int(f.height), stride = Int(f.fullWidth), rows = Int(f.fullHeight)
 		guard f.isWholeNV12 else { return }
 		let slot = (current + 1) % planes.count

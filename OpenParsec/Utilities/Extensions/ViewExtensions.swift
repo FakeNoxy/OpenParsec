@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// SwiftUI `View` availability shims.
 extension View {
 	func prefersPersistentSystemOverlaysHidden() -> some View {
 		if #available(iOS 16, *) {

@@ -2,6 +2,9 @@ import Foundation
 import ParsecSDK
 import os
 
+// MARK: - Stream Session State
+
+/// Observable holder for the active stream's session metrics (resolution, bitrate, fps, output).
 class StreamSessionState: ObservableObject {
 	@Published var resolutionX = 0
 	@Published var resolutionY = 0

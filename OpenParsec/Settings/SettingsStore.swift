@@ -1,6 +1,9 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Settings Store
+
+/// Observable singleton wrapping `UserDefaults` for all user settings.
 final class SettingsStore: ObservableObject {
 	static let shared = SettingsStore()
 	private let defaults = UserDefaults.standard

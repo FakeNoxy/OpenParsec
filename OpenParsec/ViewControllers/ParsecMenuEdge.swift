@@ -1,6 +1,9 @@
 import UIKit
 import ParsecSDK
 
+// MARK: - Menu Edge Swipe
+
+/// Screen-edge swipe and tap/long-press handlers that open the stream menu.
 extension ParsecViewController {
 	// the delay stops a direct mode swipe from clicking at the edge first
 	func addMenuEdgeSwipe(_ edge: UIRectEdge) -> UIScreenEdgePanGestureRecognizer {

@@ -70,8 +70,12 @@ class CParsec {
 		parsecImpl = ParsecSDKBridge()
 	}
 
+	/// Release the SDK bridge. `CParsec` is the sole owner of `parsecImpl`, so
+	/// dropping the reference triggers `ParsecSDKBridge.deinit`, which calls
+	/// `ParsecDestroy(_parsec)` and `audio_destroy`. Previously a no-op; the
+	/// bridge was only reclaimed when the process exited.
 	static func destroy() {
-
+		parsecImpl = nil
 	}
 
 	static func connect(_ peerID: String) -> ParsecStatus {

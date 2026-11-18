@@ -2,6 +2,9 @@ import UIKit
 import ParsecSDK
 import QuartzCore
 
+// MARK: - Touch Controller
+
+/// Multi-touch input pipeline: cursor, two-finger gestures, zoom, momentum, edge scroll.
 extension ParsecViewController: UIGestureRecognizerDelegate {
 
 	func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {

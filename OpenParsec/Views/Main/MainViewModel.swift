@@ -41,6 +41,7 @@ final class MainViewModel: ObservableObject {
 	var onLogout: (() -> Void)?
 
 	private var pollTask: Task<Void, Never>?
+	private var eventToken: ParsecBackgroundManager.EventToken?
 
 	func initView() {
 		lastHostShown = ParsecBackgroundManager.shared.lastPeerId != nil ? ParsecBackgroundManager.shared.lastHostname : nil
@@ -48,13 +49,30 @@ final class MainViewModel: ObservableObject {
 		refreshSelf()
 		refreshFriends()
 
-		ParsecBackgroundManager.shared.onShouldReconnect = { peerId in
-			Task { @MainActor in
-				if let host = self.hosts.first(where: { $0.id == peerId }) {
-					self.connectTo(host)
-				} else {
-					self.refreshHosts()
+		let mgr = ParsecBackgroundManager.shared
+		// Arm the app-shortcut guard (was: onShortcutReconnect != nil).
+		mgr.canShortcutReconnect = true
+		// .shouldReconnect / .shortcutReconnect handlers. Re-arming on every
+		// initView() replaces the previous last-writer-wins closure assignment.
+		if let old = self.eventToken { mgr.removeEventHandler(old) }
+		self.eventToken = mgr.addEventHandler { [weak self] event in
+			switch event {
+			case .shouldReconnect(let peerId):
+				Task { @MainActor in
+					guard let self else { return }
+					if let host = self.hosts.first(where: { $0.id == peerId }) {
+						self.connectTo(host)
+					} else {
+						self.refreshHosts()
+					}
 				}
+			case .shortcutReconnect:
+				Task { @MainActor in
+					guard let self, !self.isConnecting else { return }
+					self.reconnectLastHost()
+				}
+			default:
+				break
 			}
 		}
 
@@ -67,11 +85,6 @@ final class MainViewModel: ObservableObject {
 		}
 		NetworkWatcher.shared.start()
 
-		ParsecBackgroundManager.shared.onShortcutReconnect = {
-			Task { @MainActor in
-				if !self.isConnecting { self.reconnectLastHost() }
-			}
-		}
 		let pending = ParsecBackgroundManager.shared.reconnectPending
 		ParsecBackgroundManager.shared.reconnectPending = false
 

@@ -1,6 +1,9 @@
 import UIKit
 import ParsecSDK
 
+// MARK: - Keyboard Layout
+
+/// Virtual on-screen keyboard: key buttons, input accessory view, and toolbar.
 class KeyboardButton: UIButton {
 	let keyText: String
 	let isToggleable: Bool

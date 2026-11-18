@@ -1,5 +1,6 @@
 import Foundation
 
+/// Enumerations backing the user-facing settings choices.
 enum RendererType: Int {
 	case opengl
     case metal

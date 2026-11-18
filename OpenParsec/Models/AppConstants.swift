@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 
+/// App-wide constants: keychain key, Parsec API base URL, and User-Agent string.
 enum AppConstants {
 	static let sessionKeyChainKey = "OPStoredAuthData"
 

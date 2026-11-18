@@ -22,7 +22,7 @@ class ParsecGLKViewController: ParsecRendererView {
 		glkRenderer = ParsecGLKRenderer(glkView, glkViewController, updateImage)
 		self.viewController?.view.addSubview(glkView)
 		setupGLKViewController()
-		ParsecBackgroundManager.shared.glkViewController = glkViewController
+		ParsecBackgroundManager.shared.renderLoop = glkViewController
 
 	}
 

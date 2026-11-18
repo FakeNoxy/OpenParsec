@@ -1,5 +1,6 @@
 import Foundation
 
+/// Identifiable wrappers over the API models for SwiftUI `List`/`ForEach`.
 struct IdentifiableHostInfo: Identifiable {
 	var id: String // Peer ID
 	var hostname: String // Computer's Display Name

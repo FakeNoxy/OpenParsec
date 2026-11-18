@@ -1,6 +1,7 @@
 import Foundation
 import ParsecSDK
 
+/// Converts cursor coordinates between client (screen) and host (remote) space.
 class CursorPositionHelper {
 	static func toHost(_ xp: Int, _ yp: Int) -> (Int, Int) {
 		let xh = CParsec.hostWidth

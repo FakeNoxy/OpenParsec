@@ -1,5 +1,8 @@
 import CoreGraphics
 
+// MARK: - Parsec Resolutions
+
+/// Supported stream resolutions (host, client, and fixed presets).
 enum ParsecResolution: String, CaseIterable, Hashable {
 	case host = "Host Resolution"
 	case client = "Client Resolution" // updated dynamically during connection

@@ -1,8 +1,6 @@
 import UIKit
 import MetalKit
 
-extension MTKView: RenderLoop {}
-
 class ParsecMetalViewController: ParsecRendererView {
 
 	var metalView: MTKView!
@@ -30,7 +28,7 @@ class ParsecMetalViewController: ParsecRendererView {
 		let maxFPS = metalView.window?.screen.maximumFramesPerSecond ?? 60
 		metalView.preferredFramesPerSecond = fps == 0 ? maxFPS : fps
 		metalView.delegate = metalRenderer
-		ParsecBackgroundManager.shared.glkViewController = metalView
+		ParsecBackgroundManager.shared.renderLoop = metalView
 	}
 
 	func cleanUp() {

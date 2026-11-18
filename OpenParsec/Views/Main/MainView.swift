@@ -128,111 +128,10 @@ struct MainView: View {
 									.opacity(0.5)
 							}
 							if let lastHost = viewModel.lastHostShown, !viewModel.isConnecting {
-								VStack(spacing: 0) {
-									HStack {
-										VStack(alignment: .leading, spacing: 4) {
-											Text("Last connected")
-												.font(.system(size: 12))
-												.opacity(0.5)
-											Text(lastHost)
-												.font(.system(size: 16, weight: .medium))
-										}
-										Spacer()
-										Button(action: viewModel.reconnectLastHost) {
-											Text("Reconnect")
-												.lineLimit(1)
-												.fixedSize()
-												.foregroundColor(.white)
-												.padding(.horizontal, 16)
-												.frame(minHeight: 44)
-												.background(Color("AccentColor"))
-												.cornerRadius(8)
-										}
-										Button(action: viewModel.clearLastHost) {
-											Image(systemName: "xmark")
-												.foregroundColor(Color("Foreground"))
-												.opacity(0.5)
-												.frame(width: 44, height: 44)
-												.contentShape(Rectangle())
-										}
-									}
-									.padding()
-									HStack {
-										Toggle("Reconnect on app launch", isOn: Binding(
-											get: { SettingsStore.shared.autoConnectOnLaunch },
-											set: { SettingsStore.shared.autoConnectOnLaunch = $0 }
-										))
-										.font(.system(size: 13))
-										.opacity(0.7)
-									}
-									.padding(.horizontal)
-									.padding(.bottom, 10)
-								}
-								.frame(maxWidth: 400)
-								.background(Rectangle().fill(Color("BackgroundCard")))
-								.cornerRadius(8)
+								LastHostCard(hostname: lastHost, onReconnect: { viewModel.reconnectLastHost() }, onClear: { viewModel.clearLastHost() })
 							}
 							ForEach(viewModel.hosts) { i in
-								ZStack {
-									VStack {
-										URLImage(url: URL(string: "https://parsecusercontent.com/cors-resize-image/w=64,h=64,fit=crop,background=white,q=90,f=jpeg/avatars/\(String(i.user.id))/avatar"),
-												output:
-												{
-													$0
-														.resizable()
-														.aspectRatio(contentMode: .fit)
-														.frame(width: 64, height: 64)
-														.cornerRadius(8)
-												},
-												placeholder:
-												{
-													Image("IconTransparent")
-														.resizable()
-														.aspectRatio(contentMode: .fit)
-														.frame(width: 64, height: 64)
-														.background(Rectangle().fill(Color("BackgroundPrompt")))
-														.cornerRadius(8)
-												})
-										Text(i.hostname)
-											.font(.system(size: 20, weight: .medium))
-											.multilineTextAlignment(.center)
-										Text("\(i.user.name)#\(String(i.user.id))")
-											.font(.system(size: 16, weight: .medium))
-											.multilineTextAlignment(.center)
-											.opacity(0.5)
-										Button(action: { viewModel.connectTo(i) }) {
-											Text("Connect")
-												.lineLimit(1)
-												.fixedSize()
-												.foregroundColor(.white)
-												.padding(.horizontal, 28)
-												.frame(minHeight: 44)
-												.background(Color("AccentColor"))
-												.cornerRadius(8)
-										}
-									}
-
-									if i.connections > 0 {
-										VStack {
-											HStack {
-												Image(systemName: "person.fill")
-												Text(String(i.connections))
-													.font(.system(size: 16, weight: .medium))
-												Spacer()
-											}
-											Spacer()
-										}
-									}
-								}
-								.padding()
-								.frame(maxWidth: 400)
-								.background(Rectangle().fill(Color("BackgroundCard")))
-								.cornerRadius(8)
-								.contextMenu {
-									Button(action: { UIPasteboard.general.string = i.hostname }) {
-										Label("Copy Name", systemImage: "doc.on.doc")
-									}
-								}
+								HostCard(host: i, onConnect: { viewModel.connectTo(i) })
 							}
 						}
 						.padding()
@@ -281,37 +180,7 @@ struct MainView: View {
 									.multilineTextAlignment(.center)
 									.opacity(0.5)
 								ForEach(viewModel.friends) { i in
-									HStack {
-										URLImage(url: URL(string: "https://parsecusercontent.com/cors-resize-image/w=48,h=48,fit=crop,background=white,q=90,f=jpeg/avatars/\(String(i.id))/avatar"),
-											output:
-											{
-												$0
-													.resizable()
-													.aspectRatio(contentMode: .fit)
-													.frame(width: 48, height: 48)
-													.cornerRadius(6)
-											},
-											placeholder:
-											{
-												Image("IconTransparent")
-													.resizable()
-													.aspectRatio(contentMode: .fit)
-													.frame(width: 48, height: 48)
-													.background(Rectangle().fill(Color("BackgroundPrompt")))
-													.cornerRadius(6)
-											})
-										Text("\(i.username)#\(String(i.id))")
-											.font(.system(size: 16, weight: .medium))
-											.multilineTextAlignment(.center)
-										Spacer()
- //										Button(action:{ }, label:{ Image(systemName:"ellipsis.circle.fill") })
- //											.font(.system(size:20))
- //											.foregroundColor(Color("AccentColor"))
- //											.padding(8)
-									}
-									.padding(8)
-									.background(Color("BackgroundCard"))
-									.cornerRadius(12)
+									FriendRow(friend: i)
 								}
 							}
 						}
@@ -360,7 +229,7 @@ struct MainView: View {
 				.zIndex(1)
 			}
 			.onAppear(perform: viewModel.initView)
-			.onDisappear { ParsecBackgroundManager.shared.onShortcutReconnect = nil }
+			.onDisappear { ParsecBackgroundManager.shared.canShortcutReconnect = false }
 			.disabled(busy) // disable view if busy
 
 			// Settings screen

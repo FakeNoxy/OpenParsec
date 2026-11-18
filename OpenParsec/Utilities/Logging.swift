@@ -2,6 +2,9 @@ import Foundation
 import Combine
 import os
 
+// MARK: - Logging
+
+/// OSLog categories and the in-app `ConnectionLog` ring buffer.
 let sdkLog = OSLog(subsystem: "com.aigch.OpenParsec", category: "sdk")
 let appLog = OSLog(subsystem: "com.aigch.OpenParsec", category: "app")
 

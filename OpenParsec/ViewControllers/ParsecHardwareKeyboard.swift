@@ -1,6 +1,9 @@
 import UIKit
 import ParsecSDK
 
+// MARK: - Hardware Keyboard
+
+/// Hardware (physical) keyboard handling: key repeat and modifier remapping.
 extension ParsecViewController {
 	override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
 		for press in presses {
