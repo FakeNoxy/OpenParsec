@@ -1,6 +1,6 @@
 import UIKit
 
-protocol ParsecPlayground {
+protocol ParsecRendererView {
 	init(viewController: UIViewController, updateImage: @escaping () -> Void)
 	var renderView: UIView { get }
 	func viewDidLoad()

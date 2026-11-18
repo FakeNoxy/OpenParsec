@@ -1,7 +1,7 @@
 import UIKit
 import GLKit
 
-class ParsecGLKViewController: ParsecPlayground {
+class ParsecGLKViewController: ParsecRendererView {
 
 	var glkView: GLKView!
 	let glkViewController = GLKViewController()

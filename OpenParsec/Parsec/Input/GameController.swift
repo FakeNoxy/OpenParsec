@@ -163,10 +163,6 @@ class GamepadController {
         CParsec.sendGameControllerButtonMessage(controllerId: 1, button, pressed: pressed)
     }
 
-	// func triggerButtonChangedHandler(_ button: ParsecGamepadAxis, _ pressed: Bool) {
-        // CParsec.sendGameControllerTriggerButtonMessage(controllerId:1, button, pressed)
-    // }
-
     func triggerChangedHandler(_ button: ParsecGamepadAxis, _ value: Float, _ pressed: Bool) {
         CParsec.sendGameControllerAxisMessage(controllerId: 1, button, ButtonFloatToParsecInt(value))
     }

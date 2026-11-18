@@ -130,12 +130,12 @@ extension ParsecView {
 
 		var hostConfigChanged = false
 		if SettingsHandler.resolution != resolutionAtOpen {
-			DataManager.model.resolutionX = SettingsHandler.resolution.width
-			DataManager.model.resolutionY = SettingsHandler.resolution.height
+			StreamSessionState.shared.resolutionX = SettingsHandler.resolution.width
+			StreamSessionState.shared.resolutionY = SettingsHandler.resolution.height
 			hostConfigChanged = true
 		}
-		if SettingsHandler.constantFps != DataManager.model.constantFps {
-			DataManager.model.constantFps = SettingsHandler.constantFps
+		if SettingsHandler.constantFps != StreamSessionState.shared.constantFps {
+			StreamSessionState.shared.constantFps = SettingsHandler.constantFps
 			hostConfigChanged = true
 		}
 		if hostConfigChanged { CParsec.updateHostVideoConfig() }
@@ -194,30 +194,6 @@ extension ParsecView {
 		}
 	}
 
-		/*func genDisplaySheet() -> ActionSheet
-	{
-		let len:Int = 16
-		var outputs = [ParsecOutput?](repeating:nil, count:len)
-		ParsecGetOutputs(&outputs, UInt32(len))
-		print("Listing \(outputs.count) displays")
-
-		func getDeviceName(_ output:ParsecOutput) -> String
-		{
-			return withUnsafePointer(to:output.device)
-			{
-				$0.withMemoryRebound(to: UInt8.self, capacity:MemoryLayout.size(ofValue:$0))
-				{
-					String(cString:$0)
-				}
-			}
-		}
-
-		let buttons = outputs.enumerated().map
-		{ i, output in
-			Alert.Button.default(Text("\(i) - \(getDeviceName(output))"), action:{print("Selected device \(i)")})
-		}
-		return ActionSheet(title: Text("Select a Display:"), buttons:buttons + [Alert.Button.cancel()])
-	}*/
 
 	func disconnect(isBackgroundDisconnect: Bool = false) {
 		appNote("[stream] disconnect\(isBackgroundDisconnect ? " in the background" : "")")
@@ -234,7 +210,7 @@ extension ParsecView {
 
 		CParsec.sendReleaseMessage()
 		CParsec.disconnect()
-		DataManager.model.output = "none"
+		StreamSessionState.shared.output = "none"
 		CParsec.drawRate = 0
 		self.parsecViewController.glkView.cleanUp()
 
@@ -249,8 +225,8 @@ extension ParsecView {
 	func changeResolution(res: ParsecResolution) {
         SettingsHandler.resolution = res
 		DispatchQueue.main.async {
-			DataManager.model.resolutionX = res.width
-			DataManager.model.resolutionY = res.height
+			StreamSessionState.shared.resolutionX = res.width
+			StreamSessionState.shared.resolutionY = res.height
 			CParsec.updateHostVideoConfig()
 		}
 	}
@@ -261,17 +237,17 @@ extension ParsecView {
 	}
 
 	func applyBitrate() {
-		let target = SettingsHandler.bitrate > 0 ? SettingsHandler.bitrate : DataManager.model.hostDefaultBitrate
-		guard target > 0, target != DataManager.model.bitrate else { return }
-		DataManager.model.bitrate = target
+		let target = SettingsHandler.bitrate > 0 ? SettingsHandler.bitrate : StreamSessionState.shared.hostDefaultBitrate
+		guard target > 0, target != StreamSessionState.shared.bitrate else { return }
+		StreamSessionState.shared.bitrate = target
 		CParsec.updateHostVideoConfig()
 	}
 
 	func toggleConstantFps() {
 		DispatchQueue.main.async {
-			DataManager.model.constantFps.toggle()
+			StreamSessionState.shared.constantFps.toggle()
 			CParsec.updateHostVideoConfig()
-			SettingsHandler.constantFps = DataManager.model.constantFps
+			SettingsHandler.constantFps = StreamSessionState.shared.constantFps
 		}
 	}
 
@@ -299,7 +275,7 @@ extension ParsecView {
 
 	func changeDisplay(displayId: String) {
 		DispatchQueue.main.async {
-			DataManager.model.output = displayId
+			StreamSessionState.shared.output = displayId
 			CParsec.updateHostVideoConfig()
 		}
 	}
@@ -312,14 +288,4 @@ extension ParsecView {
 
 
 // from https://github.com/utmapp/UTM/blob/117e3a962f2f46f7d847632d65fa7a85a2bb0cfa/Platform/iOS/VMWindowView.swift#L314
-}
-
-extension View {
-	func prefersPersistentSystemOverlaysHidden() -> some View {
-		if #available(iOS 16, *) {
-			return self.persistentSystemOverlays(.hidden)
-		} else {
-			return self
-		}
-	}
 }

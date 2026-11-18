@@ -192,7 +192,7 @@ struct LoginView: View {
 						}
 						NetworkHandler.clinfo = info
 
-						saveToKeychain(data: data, key: GLBDataModel.shared.SessionKeyChainKey)
+						saveToKeychain(data: data, key: AppConstants.sessionKeyChainKey)
 
 						if let c = controller {
 							print("*** Login succeeded! ***")

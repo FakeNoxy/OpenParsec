@@ -3,7 +3,7 @@ import MetalKit
 
 extension MTKView: RenderLoop {}
 
-class ParsecMetalViewController: ParsecPlayground {
+class ParsecMetalViewController: ParsecRendererView {
 
 	var metalView: MTKView!
 	let metalRenderer: ParsecMetalRenderer?

@@ -1,59 +1,38 @@
 import UIKit
 import ParsecSDK
 
-// MARK: - Virtual Keyboard
-extension ParsecViewController: UIKeyInput, UITextInputTraits {
-	var hasText: Bool {
-		return true
+class KeyboardButton: UIButton {
+	let keyText: String
+	let isToggleable: Bool
+	var isOn = false
+
+	required init(keyText: String, isToggleable: Bool) {
+		self.keyText = keyText
+		self.isToggleable = isToggleable
+		super.init(frame: .zero)
+		addTarget(self, action: #selector(handleTouchDown), for: .touchDown)
+		addTarget(self, action: #selector(handleTouchUp), for: [.touchUpInside, .touchDragExit, .touchCancel])
+
 	}
 
-	var keyboardType: UIKeyboardType {
-		get {
-			return .asciiCapable
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+
+	// Add a press-down animation for feedback
+	@objc private func handleTouchDown() {
+		self.alpha = 0.5
+	}
+
+	// Restore to normal state when touch ends
+	@objc private func handleTouchUp() {
+		UIView.animate(withDuration: 0.2) {
+			self.alpha = 1.0
 		}
-		set {
+	}
+}
 
-		}
-	}
-
-	// passthrough keyboard: send raw input, dont let iOS autocorrect / smart-substitute / inject text
-	var autocorrectionType: UITextAutocorrectionType {
-		get { .no }
-		set { }
-	}
-	var spellCheckingType: UITextSpellCheckingType {
-		get { .no }
-		set { }
-	}
-	var smartQuotesType: UITextSmartQuotesType {
-		get { .no }
-		set { }
-	}
-	var smartDashesType: UITextSmartDashesType {
-		get { .no }
-		set { }
-	}
-	var smartInsertDeleteType: UITextSmartInsertDeleteType {
-		get { .no }
-		set { }
-	}
-	var autocapitalizationType: UITextAutocapitalizationType {
-		get { .none }
-		set { }
-	}
-
-	override var canBecomeFirstResponder: Bool {
-		return true
-	}
-
-	func insertText(_ text: String) {
-		CParsec.sendVirtualKeyboardInput(text: text)
-	}
-
-	func deleteBackward() {
-		CParsec.sendVirtualKeyboardInput(text: "BACKSPACE")
-	}
-
+extension ParsecViewController {
     // copied from moonlight https://github.com/moonlight-stream/moonlight-ios/blob/022352c1667788d8626b659d984a290aa5c25e17/Limelight/Input/StreamView.m#L393
 	override var inputAccessoryView: UIView? {
 
@@ -179,21 +158,6 @@ extension ParsecViewController: UIKeyInput, UITextInputTraits {
 		return button
 	}
 
-	@objc func inputWasReleased() {
-		clearToolbarModifiers(sendToHost: false)
-	}
-
-	func clearToolbarModifiers(sendToHost: Bool) {
-		guard let bar = keyboardAccessoriesView else { return }
-		for button in toolbarButtons(in: bar) where button.isOn {
-			button.isOn = false
-			button.backgroundColor = .black
-			if sendToHost {
-				CParsec.sendVirtualKeyboardInput(text: button.keyText, isOn: false)
-			}
-		}
-	}
-
 	func toolbarButtons(in view: UIView) -> [KeyboardButton] {
 		let own = (view as? KeyboardButton).map { [$0] } ?? []
 		return own + view.subviews.flatMap { toolbarButtons(in: $0) }
@@ -231,26 +195,4 @@ extension ParsecViewController: UIKeyInput, UITextInputTraits {
 		// Resign first responder to dismiss the keyboard
 		resignFirstResponder()
 	}
-
-	// CRITICAL: This is the robust way to show the keyboard.
-    // 1. Dispatch async to ensure view is attached to window.
-    // 2. call reloadInputViews() to ensure updated accessory view (especially for rotation).
-    // 3. call becomeFirstResponder().
-    // 4. Do NOT simplify this to a synchronous call, or it will fail in some race conditions.
-	func setKeyboardVisible(_ visible: Bool) {
-		keyboardVisible = visible
-		if visible {
-            DispatchQueue.main.async {
-                self.reloadInputViews()
-                let success = self.becomeFirstResponder()
-                if !success {
-                   // Fallback: try again? or just log (can't log).
-                   // Maybe ensure user interaction is on on window?
-                }
-            }
-		} else {
-			resignFirstResponder()
-		}
-	}
-
 }

@@ -250,7 +250,7 @@ extension MainView {
 		pollTimer?.invalidate()
 		pollTimer = nil
 		CParsec.initialize()
-		DataManager.model.reset()
+		StreamSessionState.shared.reset()
 		ParsecBackgroundManager.shared.reconnectAttempts = 0
 		connectingToName = who.hostname
 		retryingConnect = retried
@@ -347,7 +347,7 @@ extension MainView {
 	}
 
 	func logout() {
-		removeFromKeychain(key: GLBDataModel.shared.SessionKeyChainKey)
+		removeFromKeychain(key: AppConstants.sessionKeyChainKey)
 		NetworkHandler.clinfo = nil
 		ParsecBackgroundManager.shared.disableAutoReconnect()
 		if let c = controller {
@@ -368,21 +368,4 @@ struct MainView_Previews: PreviewProvider {
 	static var previews: some View {
 		MainView(nil)
 	}
-}
-
-struct IdentifiableHostInfo: Identifiable {
-	var id: String // Peer ID
-	var hostname: String // Computer's Display Name
-	var user: UserInfo // User Data
-	var connections: Int // User's Connected To This Host
-}
-
-struct IdentifiableUserInfo: Identifiable {
-	var id: Int // User ID
-	var username: String // User Display Name
-}
-
-enum Page {
-	case hosts
-	case friends
 }

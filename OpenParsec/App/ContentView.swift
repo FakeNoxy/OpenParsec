@@ -5,7 +5,6 @@ enum ViewType {
 	case login
 	case main
 	case parsec
-	case test
 }
 
 struct ContentView: View {
@@ -23,9 +22,7 @@ struct ContentView: View {
 						.transition(defaultTransition)
 				case .parsec:
 					ParsecView(self)
-			case .test:
-				TestView(self)
-			 }
+				}
 		}
 		.onAppear(perform: initApp)
 		.background(Rectangle().fill(Color.black).edgesIgnoringSafeArea(.all))
@@ -40,14 +37,14 @@ struct ContentView: View {
 	func initApp() {
 
 		// Check to see if we have old session data
-		if let data = loadFromKeychain(key: GLBDataModel.shared.SessionKeyChainKey) {
+		if let data = loadFromKeychain(key: AppConstants.sessionKeyChainKey) {
 			let decoder = JSONDecoder()
 
 			print("Retrieved data from keychain: \(data).\nTrying to restore session.")
 			NetworkHandler.clinfo = try? decoder.decode(ClientInfo.self, from: data)
 			if NetworkHandler.clinfo != nil {
 				curView = .main
-				let status = SecItemUpdate([kSecClass as String: kSecClassGenericPassword, kSecAttrAccount as String: GLBDataModel.shared.SessionKeyChainKey] as CFDictionary, [kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock] as CFDictionary)
+				let status = SecItemUpdate([kSecClass as String: kSecClassGenericPassword, kSecAttrAccount as String: AppConstants.sessionKeyChainKey] as CFDictionary, [kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock] as CFDictionary)
 				if status != errSecSuccess {
 					os_log("%{public}@", "[session] keychain update \(status)")
 				}

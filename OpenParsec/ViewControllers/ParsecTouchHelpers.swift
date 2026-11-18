@@ -1,36 +1,5 @@
 import UIKit
 
-class KeyboardButton: UIButton {
-	let keyText: String
-	let isToggleable: Bool
-	var isOn = false
-
-	required init(keyText: String, isToggleable: Bool) {
-		self.keyText = keyText
-		self.isToggleable = isToggleable
-		super.init(frame: .zero)
-		addTarget(self, action: #selector(handleTouchDown), for: .touchDown)
-		addTarget(self, action: #selector(handleTouchUp), for: [.touchUpInside, .touchDragExit, .touchCancel])
-
-	}
-
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-
-	// Add a press-down animation for feedback
-	@objc private func handleTouchDown() {
-		self.alpha = 0.5
-	}
-
-	// Restore to normal state when touch ends
-	@objc private func handleTouchUp() {
-		UIView.animate(withDuration: 0.2) {
-			self.alpha = 1.0
-		}
-	}
-}
-
 protocol ParsecTouchInputDelegate: AnyObject {
 	// Called on every touch change with the authoritative set of currently-active touches.
 	func parsecTouchesUpdated(_ activeTouches: Set<UITouch>, moved: Bool)

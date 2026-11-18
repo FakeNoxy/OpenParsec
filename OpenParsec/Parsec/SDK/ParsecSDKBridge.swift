@@ -262,9 +262,9 @@ class ParsecSDKBridge: ParsecService {
 		} else if e.type == CLIENT_EVENT_STREAM {
 			os_log("%{public}@", log: sdkLog, "[stream] s=\(e.stream.stream) status=\(e.stream.status.rawValue)")
 		} else if e.type == CLIENT_EVENT_BLOCKED {
-			DispatchQueue.main.async { DataManager.model.isBlocked = true }
+			DispatchQueue.main.async { StreamSessionState.shared.isBlocked = true }
 		} else if e.type == CLIENT_EVENT_UNBLOCKED {
-			DispatchQueue.main.async { DataManager.model.isBlocked = false }
+			DispatchQueue.main.async { StreamSessionState.shared.isBlocked = false }
 		}
 		return false
 	}
@@ -283,21 +283,21 @@ class ParsecSDKBridge: ParsecService {
 				let videoConfig = config.video.first
 				DispatchQueue.main.async {
 					if let cfg = videoConfig {
-						DataManager.model.resolutionX = cfg.resolutionX
-						DataManager.model.resolutionY = cfg.resolutionY
-						DataManager.model.bitrate = cfg.encoderMaxBitrate
-						DataManager.model.constantFps = cfg.fullFPS
+						StreamSessionState.shared.resolutionX = cfg.resolutionX
+						StreamSessionState.shared.resolutionY = cfg.resolutionY
+						StreamSessionState.shared.bitrate = cfg.encoderMaxBitrate
+						StreamSessionState.shared.constantFps = cfg.fullFPS
 					}
 					if !self.didSetResolution {
 						self.didSetResolution = true
-						if DataManager.model.hostDefaultBitrate == 0 {
-							DataManager.model.hostDefaultBitrate = DataManager.model.bitrate
+						if StreamSessionState.shared.hostDefaultBitrate == 0 {
+							StreamSessionState.shared.hostDefaultBitrate = StreamSessionState.shared.bitrate
 						}
-						DataManager.model.resolutionX = SettingsHandler.resolution.width
-						DataManager.model.resolutionY = SettingsHandler.resolution.height
-						DataManager.model.constantFps = SettingsHandler.constantFps
+						StreamSessionState.shared.resolutionX = SettingsHandler.resolution.width
+						StreamSessionState.shared.resolutionY = SettingsHandler.resolution.height
+						StreamSessionState.shared.constantFps = SettingsHandler.constantFps
 						if SettingsHandler.bitrate > 0 {
-							DataManager.model.bitrate = SettingsHandler.bitrate
+							StreamSessionState.shared.bitrate = SettingsHandler.bitrate
 						}
 						self.updateHostVideoConfig()
 					}
@@ -311,7 +311,7 @@ class ParsecSDKBridge: ParsecService {
 				let decoder = JSONDecoder()
 				let config = try decoder.decode(Array<ParsecDisplayConfig>.self, from: Data(bytesNoCopy: pointer!, count: strlen(pointer!), deallocator: .none))
 				DispatchQueue.main.async {
-					DataManager.model.displayConfigs = config
+					StreamSessionState.shared.displayConfigs = config
 				}
 			} catch {
 				print("error while parsing user data: \(error.localizedDescription)")
@@ -555,16 +555,6 @@ class ParsecSDKBridge: ParsecService {
 		ParsecClientSendMessage(_parsec, &pmsg)
 	}
 
-	/*static func sendGameControllerTriggerButtonMessage(controllerId: UInt32, _ button:ParsecGamepadAxis, pressed: Bool)
-	{
-	    var pmsg = ParsecMessage()
-		pmsg.type = MESSAGE_GAMEPAD_AXIS
-		pmsg.gamepadAxis.id = controllerId
-		pmsg.gamepadAxis.button = button
-		pmsg.gamepadAxis.pressed = pressed
-		ParsecClientSendMessage(_parsec, &pmsg)
-	}*/
-
 	func sendGameControllerAxisMessage(controllerId: UInt32, _ button: ParsecGamepadAxis, _ value: Int16) {
 	    var pmsg = ParsecMessage()
 		pmsg.type = MESSAGE_GAMEPAD_AXIS
@@ -626,11 +616,11 @@ class ParsecSDKBridge: ParsecService {
 
 	func updateHostVideoConfig() {
 		var videoConfig = ParsecUserDataVideoConfig()
-		videoConfig.video[0].resolutionX = DataManager.model.resolutionX
-		videoConfig.video[0].resolutionY = DataManager.model.resolutionY
-		videoConfig.video[0].encoderMaxBitrate = DataManager.model.bitrate
-		videoConfig.video[0].fullFPS = DataManager.model.constantFps
-		videoConfig.video[0].output = DataManager.model.output
+		videoConfig.video[0].resolutionX = StreamSessionState.shared.resolutionX
+		videoConfig.video[0].resolutionY = StreamSessionState.shared.resolutionY
+		videoConfig.video[0].encoderMaxBitrate = StreamSessionState.shared.bitrate
+		videoConfig.video[0].fullFPS = StreamSessionState.shared.constantFps
+		videoConfig.video[0].output = StreamSessionState.shared.output
 		let encoder = JSONEncoder()
 		let data = try! encoder.encode(videoConfig)
 		CParsec.sendUserData(type: .setVideoConfig, message: data)

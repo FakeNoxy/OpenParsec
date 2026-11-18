@@ -46,7 +46,7 @@ struct ParsecView: View {
 	@StateObject var session = ParsecSession()
 
     // Observer shared state for updates
-    @ObservedObject var dataModel = DataManager.model
+    @ObservedObject var dataModel = StreamSessionState.shared
 	@ObservedObject var settingsStore = SettingsStore.shared
 
     // Computed property for convenience refactoring
@@ -307,12 +307,12 @@ struct ParsecView: View {
 							.frame(maxWidth: .infinity)
 							.multilineTextAlignment(.center)
 					}
-					if DataManager.model.displayConfigs.count > 1 {
+					if StreamSessionState.shared.displayConfigs.count > 1 {
 						Menu {
 							Button("Auto") {
 								changeDisplay(displayId: "none")
 							}
-							ForEach(DataManager.model.displayConfigs, id: \.self) { config in
+							ForEach(StreamSessionState.shared.displayConfigs, id: \.self) { config in
 								Button("\(config.name) \(config.adapterName)") {
 									changeDisplay(displayId: config.id)
 								}
