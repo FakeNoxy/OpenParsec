@@ -1,28 +1,3 @@
-// import SwiftUI
-// import GLKit
-//
-// struct ParsecGLKViewController: UIViewControllerRepresentable
-// {
-//	let glkView = GLKView()
-//	let glkViewController = GLKViewController()
-//	let onBeforeRender:() -> Void
-//
-//	func makeCoordinator() -> ParsecGLKRenderer
-//	{
-//		ParsecGLKRenderer(glkView, glkViewController, onBeforeRender)
-//	}
-//
-//	func makeUIViewController(context: UIViewControllerRepresentableContext<ParsecGLKViewController>) -> GLKViewController
-//	{
-//		glkView.context = EAGLContext(api:.openGLES3)!
-//		glkViewController.view = glkView
-//		glkViewController.preferredFramesPerSecond = 60
-//		return glkViewController
-//	}
-//
-//	func updateUIViewController(_ uiViewController:GLKViewController, context: UIViewControllerRepresentableContext<ParsecGLKViewController>) { }
-// }
-
 import UIKit
 import GLKit
 
@@ -41,7 +16,9 @@ class ParsecGLKViewController: ParsecPlayground {
 	}
 
 	public func viewDidLoad() {
-		glkView = GLKView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+		// iPhone Duo: size from parent view bounds, not UIScreen.main
+		let bounds = viewController?.view.bounds ?? .zero
+		glkView = GLKView(frame: CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height))
 		glkRenderer = ParsecGLKRenderer(glkView, glkViewController, updateImage)
 		self.viewController?.view.addSubview(glkView)
 		setupGLKViewController()
@@ -56,8 +33,9 @@ class ParsecGLKViewController: ParsecPlayground {
 		// Use configured FPS or device max (for ProMotion displays)
 		let fps = SettingsHandler.preferredFramesPerSecond
 		if fps == 0 {
-			// Use device's maximum refresh rate (120Hz on ProMotion iPads)
-			glkViewController.preferredFramesPerSecond = Int(UIScreen.main.maximumFramesPerSecond)
+			// iPhone Duo: get max FPS from the view's screen, not UIScreen.main
+			let maxFPS = glkView.window?.screen.maximumFramesPerSecond ?? 60
+			glkViewController.preferredFramesPerSecond = Int(maxFPS)
 		} else {
 			glkViewController.preferredFramesPerSecond = fps
 		}
@@ -87,3 +65,4 @@ class ParsecGLKViewController: ParsecPlayground {
 	}
 
 }
+

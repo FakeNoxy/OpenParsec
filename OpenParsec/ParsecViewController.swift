@@ -127,7 +127,8 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 	}
 
 	func computeRenderScale() -> CGFloat {
-		let nativeScale = UIScreen.main.nativeScale
+		// iPhone Duo: use traitCollection instead of UIScreen.main
+		let nativeScale = traitCollection.displayScale
 		guard scrollView.zoomScale > 1.01 else { return nativeScale }
 		let vw = glkView.renderView.frame.size.width
 		let vh = glkView.renderView.frame.size.height
@@ -201,7 +202,9 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 	}
 
 	func applyFrameRate() {
-		let fps = SettingsHandler.preferredFramesPerSecond == 0 ? UIScreen.main.maximumFramesPerSecond : SettingsHandler.preferredFramesPerSecond
+		// iPhone Duo: get max FPS from the view's screen, not UIScreen.main
+		let maxFPS = view.window?.screen.maximumFramesPerSecond ?? 60
+		let fps = SettingsHandler.preferredFramesPerSecond == 0 ? maxFPS : SettingsHandler.preferredFramesPerSecond
 		(glkView as? ParsecMetalViewController)?.metalView.preferredFramesPerSecond = fps
 		(glkView as? ParsecGLKViewController)?.glkViewController.preferredFramesPerSecond = fps
 	}
@@ -355,7 +358,8 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 		self.glkView.updateSize(width: w, height: h)
 		contentView.frame.size = CGSize(width: w, height: h)
 		scrollView.contentSize = CGSize(width: w, height: h)
-		CParsec.setFrame(w, h, UIScreen.main.scale)
+		// iPhone Duo: get scale from the view's screen, not UIScreen.main
+		CParsec.setFrame(w, h, view.window?.screen.scale ?? 2.0)
 
         // Reset accessory view to ensure correct width in new orientation
         clearToolbarModifiers(sendToHost: true)
@@ -379,7 +383,8 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 		glkView.updateSize(width: w, height: h)
 		contentView.frame.size = CGSize(width: w, height: h)
 		scrollView.contentSize = CGSize(width: w, height: h)
-		CParsec.setFrame(w, h, UIScreen.main.scale)
+		// iPhone Duo: get scale from the view's screen, not UIScreen.main
+		CParsec.setFrame(w, h, view.window?.screen.scale ?? 2.0)
 	}
 
 	override func viewDidAppear(_ animated: Bool) {

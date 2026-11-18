@@ -674,10 +674,13 @@ struct MainView: View {
 			let scale = window.screen.nativeScale
 			ParsecResolution.updateClientResolution(width: Int(window.bounds.width * scale), height: Int(window.bounds.height * scale))
 		} else {
-			// no key window yet on a launch reconnect, without this it asks the host for 3840x2160
-			let screen = UIScreen.main
-			let scale = screen.nativeScale
-			ParsecResolution.updateClientResolution(width: Int(screen.bounds.width * scale), height: Int(screen.bounds.height * scale))
+			// iPhone Duo: no key window yet on a launch reconnect, use view bounds fallback
+			// without this it asks the host for 3840x2160
+			if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+				let scale = scene.screen.nativeScale
+				let size = scene.screen.bounds.size
+				ParsecResolution.updateClientResolution(width: Int(size.width * scale), height: Int(size.height * scale))
+			}
 		}
 
 		pollTimer?.invalidate()
