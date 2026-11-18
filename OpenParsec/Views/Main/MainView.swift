@@ -3,50 +3,18 @@ import ParsecSDK
 
 struct MainView: View {
 	var controller: ContentView?
+	@ObservedObject var viewModel: MainViewModel
 
 	@State private var page: Page = .hosts
-
-	// Host page vars
-	@State var hostCountStr: String = "0 hosts"
-	@State var refreshTime: String = ""
-
-	@State var hosts: [IdentifiableHostInfo] = []
-
-	// Friend page vars
-	@State var friendCountStr: String = "0 friends"
-
-	@State var userInfo: IdentifiableUserInfo?
-	@State var friends: [IdentifiableUserInfo] = []
-
-	// Global vars
-	@State var showBaseAlert: Bool = false
-	@State var baseAlertText: String = ""
-
-	@State var showLogoutAlert: Bool = false
-
-	@State var isConnecting: Bool = false
-	@State var waitingForApproval: Bool = false
-	@State var retryingConnect: Bool = false
-	@State var connectPolls = 0
-	@State var connectingToName: String = ""
-	@State var pollTimer: Timer?
-	@State var approvalStartedAt: Date?
-	@State var connectStartedAt = Date()
-
-	@State var isRefreshing: Bool = false
-	@State var refreshError: String?
-
 	@State var inSettings: Bool = false
-	@State var sessionExpired: Bool = false
-
-	@State var lastHostShown: String?
 
 	var busy: Bool {
-		isConnecting || inSettings
+		viewModel.isConnecting || inSettings
 	}
 
-	init(_ controller: ContentView?) {
+	init(_ controller: ContentView?, viewModel: MainViewModel) {
 		self.controller = controller
+		self.viewModel = viewModel
 	}
 
 	var body: some View {
@@ -66,7 +34,7 @@ struct MainView: View {
 					Button(action: { showLogoutAlert = true }, label: { Image("SymbolExit").scaleEffect(x: -1) })
 						.padding()
 						.alert(isPresented: $showLogoutAlert) {
-							Alert(title: Text("Are you sure you want to logout?"), primaryButton: .destructive(Text("Logout"), action: logout), secondaryButton: .cancel(Text("Cancel")))
+							Alert(title: Text("Are you sure you want to logout?"), primaryButton: .destructive(Text("Logout"), action: viewModel.logout), secondaryButton: .cancel(Text("Cancel")))
 						}
 					Spacer()
 					HStack {
@@ -76,16 +44,16 @@ struct MainView: View {
 								.padding(4)
 								.opacity(0)
 
-							Text(hostCountStr)
+							Text(viewModel.hostCountStr)
 								.multilineTextAlignment(.center)
 								.foregroundColor(Color("Foreground"))
 								.font(.system(size: 20, weight: .medium))
-							Button(action: refreshHosts, label: { Image(systemName: "arrow.clockwise") })
+							Button(action: viewModel.refreshHosts, label: { Image(systemName: "arrow.clockwise") })
 								.padding(4)
-								.disabled(isRefreshing)
-								.opacity(isRefreshing ? 0.4 : 1)
+								.disabled(viewModel.isRefreshing)
+								.opacity(viewModel.isRefreshing ? 0.4 : 1)
 						} else if page == .friends {
-							Text(friendCountStr)
+							Text(viewModel.friendCountStr)
 								.multilineTextAlignment(.center)
 								.foregroundColor(Color("Foreground"))
 								.font(.system(size: 20, weight: .medium))
@@ -107,12 +75,12 @@ struct MainView: View {
 					// Hosts page
 					ScrollView(.vertical) {
 						VStack {
-							if sessionExpired {
+							if viewModel.sessionExpired {
 								HStack {
 									Text("Your Parsec session expired")
 										.foregroundColor(Color("Foreground"))
 									Spacer()
-									Button(action: logout) {
+									Button(action: viewModel.logout) {
 										Text("Sign In")
 											.fontWeight(.semibold)
 											.foregroundColor(Color("AccentColor"))
@@ -127,12 +95,12 @@ struct MainView: View {
 								.frame(maxWidth: 400)
 								.padding(.horizontal)
 							}
-							if let refreshError = refreshError {
+							if let refreshError = viewModel.refreshError {
 								HStack {
 									Text(refreshError)
 										.foregroundColor(Color("Foreground"))
 									Spacer()
-									Button(action: refreshHosts) {
+									Button(action: viewModel.refreshHosts) {
 										Text("Retry")
 											.fontWeight(.semibold)
 											.foregroundColor(Color("AccentColor"))
@@ -147,19 +115,19 @@ struct MainView: View {
 								.frame(maxWidth: 400)
 								.padding(.horizontal)
 							}
-							if isRefreshing {
+							if viewModel.isRefreshing {
 								HStack(spacing: 8) {
-									ActivityIndicator(isAnimating: $isRefreshing, style: .medium, tint: UIColor(named: "Foreground") ?? .white)
+									ActivityIndicator(isAnimating: $viewModel.isRefreshing, style: .medium, tint: UIColor(named: "Foreground") ?? .white)
 										.frame(width: 20, height: 20)
 									Text("Refreshing hosts...")
 										.foregroundColor(Color("Foreground"))
 								}
-							} else if !refreshTime.isEmpty {
-								Text(refreshTime)
+							} else if !viewModel.refreshTime.isEmpty {
+								Text(viewModel.refreshTime)
 									.multilineTextAlignment(.center)
 									.opacity(0.5)
 							}
-							if let lastHost = lastHostShown, !isConnecting {
+							if let lastHost = viewModel.lastHostShown, !viewModel.isConnecting {
 								VStack(spacing: 0) {
 									HStack {
 										VStack(alignment: .leading, spacing: 4) {
@@ -170,7 +138,7 @@ struct MainView: View {
 												.font(.system(size: 16, weight: .medium))
 										}
 										Spacer()
-										Button(action: reconnectLastHost) {
+										Button(action: viewModel.reconnectLastHost) {
 											Text("Reconnect")
 												.lineLimit(1)
 												.fixedSize()
@@ -180,7 +148,7 @@ struct MainView: View {
 												.background(Color("AccentColor"))
 												.cornerRadius(8)
 										}
-										Button(action: clearLastHost) {
+										Button(action: viewModel.clearLastHost) {
 											Image(systemName: "xmark")
 												.foregroundColor(Color("Foreground"))
 												.opacity(0.5)
@@ -191,8 +159,8 @@ struct MainView: View {
 									.padding()
 									HStack {
 										Toggle("Reconnect on app launch", isOn: Binding(
-											get: { SettingsHandler.autoConnectOnLaunch },
-											set: { SettingsHandler.autoConnectOnLaunch = $0 }
+											get: { SettingsStore.shared.autoConnectOnLaunch },
+											set: { SettingsStore.shared.autoConnectOnLaunch = $0 }
 										))
 										.font(.system(size: 13))
 										.opacity(0.7)
@@ -204,7 +172,7 @@ struct MainView: View {
 								.background(Rectangle().fill(Color("BackgroundCard")))
 								.cornerRadius(8)
 							}
-							ForEach(hosts) { i in
+							ForEach(viewModel.hosts) { i in
 								ZStack {
 									VStack {
 										URLImage(url: URL(string: "https://parsecusercontent.com/cors-resize-image/w=64,h=64,fit=crop,background=white,q=90,f=jpeg/avatars/\(String(i.user.id))/avatar"),
@@ -232,7 +200,7 @@ struct MainView: View {
 											.font(.system(size: 16, weight: .medium))
 											.multilineTextAlignment(.center)
 											.opacity(0.5)
-										Button(action: { connectTo(i) }) {
+										Button(action: { viewModel.connectTo(i) }) {
 											Text("Connect")
 												.lineLimit(1)
 												.fixedSize()
@@ -276,7 +244,7 @@ struct MainView: View {
 					// Friends page
 					ScrollView(.vertical) {
 						VStack {
-							if let user = userInfo {
+							if let user = viewModel.userInfo {
 								Text("You")
 									.multilineTextAlignment(.center)
 									.opacity(0.5)
@@ -308,11 +276,11 @@ struct MainView: View {
 								.background(Color("BackgroundCard"))
 								.cornerRadius(12)
 							}
-							if friends.count > 0 {
+							if viewModel.friends.count > 0 {
 								Text("Friends")
 									.multilineTextAlignment(.center)
 									.opacity(0.5)
-								ForEach(friends) { i in
+								ForEach(viewModel.friends) { i in
 									HStack {
 										URLImage(url: URL(string: "https://parsecusercontent.com/cors-resize-image/w=48,h=48,fit=crop,background=white,q=90,f=jpeg/avatars/\(String(i.id))/avatar"),
 											output:
@@ -336,10 +304,10 @@ struct MainView: View {
 											.font(.system(size: 16, weight: .medium))
 											.multilineTextAlignment(.center)
 										Spacer()
-//										Button(action:{ }, label:{ Image(systemName:"ellipsis.circle.fill") })
-//											.font(.system(size:20))
-//											.foregroundColor(Color("AccentColor"))
-//											.padding(8)
+ //										Button(action:{ }, label:{ Image(systemName:"ellipsis.circle.fill") })
+ //											.font(.system(size:20))
+ //											.foregroundColor(Color("AccentColor"))
+ //											.padding(8)
 									}
 									.padding(8)
 									.background(Color("BackgroundCard"))
@@ -355,8 +323,8 @@ struct MainView: View {
 				}
 				.padding(.top, -8)
 				.frame(maxWidth: .infinity)
-				.alert(isPresented: $showBaseAlert) {
-					Alert(title: Text(baseAlertText))
+				.alert(isPresented: $viewModel.showBaseAlert) {
+					Alert(title: Text(viewModel.baseAlertText))
 				}
 
 				// Page controls
@@ -391,7 +359,7 @@ struct MainView: View {
 				)
 				.zIndex(1)
 			}
-			.onAppear(perform: initView)
+			.onAppear(perform: viewModel.initView)
 			.onDisappear { ParsecBackgroundManager.shared.onShortcutReconnect = nil }
 			.disabled(busy) // disable view if busy
 
@@ -399,15 +367,15 @@ struct MainView: View {
 			SettingsView(visible: $inSettings)
 
 			// Loading elements
-			if isConnecting {
+			if viewModel.isConnecting {
 				VStack(spacing: 12) {
-					ActivityIndicator(isAnimating: $isConnecting, style: .large, tint: .white)
-					Text(waitingForApproval ? "Waiting for \(connectingToName) to approve you..." : retryingConnect ? "\(connectingToName) didn't answer, trying again..." : "Requesting connection to \(connectingToName)...")
+					ActivityIndicator(isAnimating: $viewModel.isConnecting, style: .large, tint: .white)
+					Text(viewModel.waitingForApproval ? "Waiting for \(viewModel.connectingToName) to approve you..." : viewModel.retryingConnect ? "\(viewModel.connectingToName) didn't answer, trying again..." : "Requesting connection to \(viewModel.connectingToName)...")
 						.font(.system(size: 16, weight: .medium))
 						.foregroundColor(.white)
 						.multilineTextAlignment(.center)
 						.padding(.horizontal)
-					Button(action: cancelConnection) {
+					Button(action: viewModel.cancelConnection) {
 						Text("Cancel")
 							.font(.system(size: 15, weight: .semibold))
 							.foregroundColor(.white)
@@ -417,7 +385,7 @@ struct MainView: View {
 							.cornerRadius(8)
 					}
 					.padding(.top, 4)
-					if SettingsHandler.showConnectionLog {
+					if SettingsStore.shared.showConnectionLog {
 						ConnectionLogPanel()
 					}
 				}
@@ -428,4 +396,11 @@ struct MainView: View {
 		.foregroundColor(Color("Foreground"))
 	}
 
+	@State private var showLogoutAlert: Bool = false
+}
+
+struct MainView_Previews: PreviewProvider {
+	static var previews: some View {
+		MainView(nil, viewModel: MainViewModel())
+	}
 }

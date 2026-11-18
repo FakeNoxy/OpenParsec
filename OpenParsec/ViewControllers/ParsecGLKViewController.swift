@@ -31,7 +31,7 @@ class ParsecGLKViewController: ParsecRendererView {
 		glkViewController.view = glkView
 
 		// Use configured FPS or device max (for ProMotion displays)
-		let fps = SettingsHandler.preferredFramesPerSecond
+		let fps = SettingsStore.shared.preferredFramesPerSecond
 		if fps == 0 {
 			// iPhone Duo: get max FPS from the view's screen, not UIScreen.main
 			let maxFPS = glkView.window?.screen.maximumFramesPerSecond ?? 60

@@ -76,7 +76,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		pendingUnpause = nil
 		var pipAttempted = false
 		if #available(iOS 15.0, *) {
-			if ParsecBackgroundManager.shared.hasActiveConnection && SettingsHandler.enablePiP {
+			if ParsecBackgroundManager.shared.hasActiveConnection && SettingsStore.shared.enablePiP {
 				PictureInPictureManager.shared.startPiP()
 				pipAttempted = PictureInPictureManager.shared.isPiPActive || PictureInPictureManager.shared.isStarting
 			}

@@ -171,31 +171,3 @@ final class SettingsStore: ObservableObject {
 		set { store(newValue, "savedConstantFps") }
 	}
 }
-
-struct SettingsHandler {
-	static var renderer: RendererType { get { SettingsStore.shared.renderer } set { SettingsStore.shared.renderer = newValue } }
-	static var resolution: ParsecResolution { get { SettingsStore.shared.resolution } set { SettingsStore.shared.resolution = newValue } }
-	static var bitrate: Int { get { SettingsStore.shared.bitrate } set { SettingsStore.shared.bitrate = newValue } }
-	static var decoder: DecoderPref { get { SettingsStore.shared.decoder } set { SettingsStore.shared.decoder = newValue } }
-	static var cursorMode: CursorMode { get { SettingsStore.shared.cursorMode } set { SettingsStore.shared.cursorMode = newValue } }
-	static var cursorScale: Double { get { SettingsStore.shared.cursorScale } set { SettingsStore.shared.cursorScale = newValue } }
-	static var mouseSensitivity: Double { get { SettingsStore.shared.mouseSensitivity } set { SettingsStore.shared.mouseSensitivity = newValue } }
-	static var optionAsCommand: Bool { get { SettingsStore.shared.optionAsCommand } set { SettingsStore.shared.optionAsCommand = newValue } }
-	static var menuSwipeEdge: MenuSwipeEdge { get { SettingsStore.shared.menuSwipeEdge } set { SettingsStore.shared.menuSwipeEdge = newValue } }
-	static var noOverlay: Bool { get { SettingsStore.shared.noOverlay } set { SettingsStore.shared.noOverlay = newValue } }
-	static var hideStatusBar: Bool { get { SettingsStore.shared.hideStatusBar } set { SettingsStore.shared.hideStatusBar = newValue } }
-	static var rightClickPosition: RightClickPosition { get { SettingsStore.shared.rightClickPosition } set { SettingsStore.shared.rightClickPosition = newValue } }
-	static var reverseScrollDirection: Bool { get { SettingsStore.shared.reverseScrollDirection } set { SettingsStore.shared.reverseScrollDirection = newValue } }
-	static var scrollSensitivity: Double { get { SettingsStore.shared.scrollSensitivity } set { SettingsStore.shared.scrollSensitivity = newValue } }
-	static var preferredFramesPerSecond: Int { get { SettingsStore.shared.preferredFramesPerSecond } set { SettingsStore.shared.preferredFramesPerSecond = newValue } }
-	static var showKeyboardButton: Bool { get { SettingsStore.shared.showKeyboardButton } set { SettingsStore.shared.showKeyboardButton = newValue } }
-	static var alwaysShowStatus: Bool { get { SettingsStore.shared.alwaysShowStatus } set { SettingsStore.shared.alwaysShowStatus = newValue } }
-	static var enablePiP: Bool { get { SettingsStore.shared.enablePiP } set { SettingsStore.shared.enablePiP = newValue } }
-	static var startMuted: Bool { get { SettingsStore.shared.startMuted } set { SettingsStore.shared.startMuted = newValue } }
-	static var autoReconnect: Bool { get { SettingsStore.shared.autoReconnect } set { SettingsStore.shared.autoReconnect = newValue } }
-	static var errorPrompts: Bool { get { SettingsStore.shared.errorPrompts } set { SettingsStore.shared.errorPrompts = newValue } }
-	static var showConnectionLog: Bool { get { SettingsStore.shared.showConnectionLog } set { SettingsStore.shared.showConnectionLog = newValue } }
-	static var autoConnectOnLaunch: Bool { get { SettingsStore.shared.autoConnectOnLaunch } set { SettingsStore.shared.autoConnectOnLaunch = newValue } }
-	static var zoomEnabled: Bool { get { SettingsStore.shared.zoomEnabled } set { SettingsStore.shared.zoomEnabled = newValue } }
-	static var constantFps: Bool { get { SettingsStore.shared.constantFps } set { SettingsStore.shared.constantFps = newValue } }
-}

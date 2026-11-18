@@ -106,7 +106,7 @@ extension ParsecViewController: UIGestureRecognizerDelegate {
 		twoFingerResidual = false
 		cursorDidMoveThisTouch = false
 		singleTouchStartScreen = activeTouches.first?.location(in: view) ?? .zero
-		if SettingsHandler.cursorMode == .direct {
+		if SettingsStore.shared.cursorMode == .direct {
 			if let t = activeTouches.first {
 				cursorContentPos = clampToContent(contentView.convert(t.location(in: view), from: view))
 				CParsec.sendMousePosition(Int32(cursorContentPos.x), Int32(cursorContentPos.y))
@@ -117,7 +117,7 @@ extension ParsecViewController: UIGestureRecognizerDelegate {
 	}
 
 	func endCursorIfNeeded() {
-		if isDragging && SettingsHandler.cursorMode == .direct {
+		if isDragging && SettingsStore.shared.cursorMode == .direct {
 			CParsec.sendMouseClickMessage(ParsecMouseButton.init(rawValue: 1), false)
 		}
 	}
@@ -165,7 +165,7 @@ extension ParsecViewController: UIGestureRecognizerDelegate {
 			return
 		}
 
-		if SettingsHandler.cursorMode == .direct {
+		if SettingsStore.shared.cursorMode == .direct {
 			cursorContentPos = clampToContent(contentView.convert(loc, from: view))
 		} else {
 			// Relative finger movement, predicted locally; sensitivity scales down with zoom so the
@@ -186,7 +186,7 @@ extension ParsecViewController: UIGestureRecognizerDelegate {
 		// Command the host to the ABSOLUTE predicted position (not a delta) so the host cursor can't
 		// crawl behind network round-trips - clicks always land where the cursor is drawn.
 		CParsec.sendMousePosition(Int32(cursorContentPos.x), Int32(cursorContentPos.y))
-		if SettingsHandler.cursorMode == .direct {
+		if SettingsStore.shared.cursorMode == .direct {
 			edgeScrollPoint = loc
 			if cursorDidMoveThisTouch && edgeScrollVelocity(at: loc) != .zero {
 				if !edgeScrollActive { edgeScrollLastTick = 0 }
@@ -219,7 +219,7 @@ extension ParsecViewController: UIGestureRecognizerDelegate {
 			}
 		case .scroll:
 			let deltaY = Float(d.midpoint.y - lastTwoFingerMidpoint.y)
-			let direction: Float = SettingsHandler.reverseScrollDirection ? -1.0 : 1.0
+			let direction: Float = SettingsStore.shared.reverseScrollDirection ? -1.0 : 1.0
 			let contribution = deltaY * scrollWheelSpeed * direction
 			accumulatedScrollY += contribution
 			let intScrollY = Int32(accumulatedScrollY)
@@ -242,7 +242,7 @@ extension ParsecViewController: UIGestureRecognizerDelegate {
 	}
 
 	func startCursorMomentum() {
-		guard SettingsHandler.cursorMode == .touchpad, !CParsec.mouseInfo.mousePositionRelative else { return }
+		guard SettingsStore.shared.cursorMode == .touchpad, !CParsec.mouseInfo.mousePositionRelative else { return }
 		guard CACurrentMediaTime() - lastCursorMoveTime < 0.06 else { return }   // finger was still moving at release
 		guard hypot(cursorVelocity.x, cursorVelocity.y) > flingMinSpeed else { return }
 		// Less glide when zoomed out: at 1x the cursor crosses the screen instead of panning the view.
@@ -379,7 +379,7 @@ extension ParsecViewController: UIGestureRecognizerDelegate {
 		let off = scrollView.contentOffset
 		let screenX = cursorContentPos.x * zoom - off.x
 		let screenY = cursorContentPos.y * zoom - off.y
-		let cs = CGFloat(SettingsHandler.cursorScale)
+		let cs = CGFloat(SettingsStore.shared.cursorScale)
 		let hotX = CGFloat(CParsec.mouseInfo.cursorHotX) * cs
 		let hotY = CGFloat(CParsec.mouseInfo.cursorHotY) * cs
 		let w = CGFloat(CParsec.mouseInfo.cursorWidth) * cs
@@ -406,7 +406,7 @@ extension ParsecViewController: UIGestureRecognizerDelegate {
 
 	func keepCursorAboveKeyboard() {
 		guard scrollView.zoomScale <= 1.0, keyboardVisible, scrollView.contentInset.bottom > 0, !pinnedToKeyboard,
-			  SettingsHandler.cursorMode != .direct, let cursor = u, !cursor.isHidden else { return }
+			  SettingsStore.shared.cursorMode != .direct, let cursor = u, !cursor.isHidden else { return }
 		let visibleBottom = view.bounds.height - keyboardHeight
 		let margin = min(50, max(0, (visibleBottom - cursor.frame.height) / 2 - 1))
 		let maxOffsetY = max(0, scrollView.contentSize.height - scrollView.bounds.height + scrollView.contentInset.bottom)

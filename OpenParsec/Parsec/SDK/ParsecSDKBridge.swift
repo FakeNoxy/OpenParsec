@@ -91,15 +91,15 @@ class ParsecSDKBridge: ParsecService {
 
 		var parsecClientCfg = ParsecClientConfig()
 		parsecClientCfg.video.0.decoderIndex = 1
-        // Use saved resolution from SettingsHandler
-		parsecClientCfg.video.0.resolutionX = Int32(SettingsHandler.resolution.width)
-		parsecClientCfg.video.0.resolutionY = Int32(SettingsHandler.resolution.height)
-		parsecClientCfg.video.0.decoderH265 = SettingsHandler.decoder == .h265
+        // Use saved resolution from SettingsStore
+		parsecClientCfg.video.0.resolutionX = Int32(SettingsStore.shared.resolution.width)
+		parsecClientCfg.video.0.resolutionY = Int32(SettingsStore.shared.resolution.height)
+		parsecClientCfg.video.0.decoderH265 = SettingsStore.shared.decoder == .h265
 
 		parsecClientCfg.video.1.decoderIndex = 1
-		parsecClientCfg.video.1.resolutionX = Int32(SettingsHandler.resolution.width)
-		parsecClientCfg.video.1.resolutionY = Int32(SettingsHandler.resolution.height)
-		parsecClientCfg.video.1.decoderH265 = SettingsHandler.decoder == .h265
+		parsecClientCfg.video.1.resolutionX = Int32(SettingsStore.shared.resolution.width)
+		parsecClientCfg.video.1.resolutionY = Int32(SettingsStore.shared.resolution.height)
+		parsecClientCfg.video.1.decoderH265 = SettingsStore.shared.decoder == .h265
 
 		parsecClientCfg.mediaContainer = 0
 		parsecClientCfg.protocol = 1
@@ -109,7 +109,7 @@ class ParsecSDKBridge: ParsecService {
 		self.startBackgroundTask()
 		didReleaseOnConnect = false
 
-		let status = ParsecClientConnect(_parsec, &parsecClientCfg, NetworkHandler.clinfo?.session_id, peerID)
+		let status = ParsecClientConnect(_parsec, &parsecClientCfg, SessionStore.clinfo?.session_id, peerID)
 
 		if status == PARSEC_OK || status == PARSEC_CONNECTING {
 			ParsecBackgroundManager.shared.connectionDidStart()
@@ -293,11 +293,11 @@ class ParsecSDKBridge: ParsecService {
 						if StreamSessionState.shared.hostDefaultBitrate == 0 {
 							StreamSessionState.shared.hostDefaultBitrate = StreamSessionState.shared.bitrate
 						}
-						StreamSessionState.shared.resolutionX = SettingsHandler.resolution.width
-						StreamSessionState.shared.resolutionY = SettingsHandler.resolution.height
-						StreamSessionState.shared.constantFps = SettingsHandler.constantFps
-						if SettingsHandler.bitrate > 0 {
-							StreamSessionState.shared.bitrate = SettingsHandler.bitrate
+						StreamSessionState.shared.resolutionX = SettingsStore.shared.resolution.width
+						StreamSessionState.shared.resolutionY = SettingsStore.shared.resolution.height
+						StreamSessionState.shared.constantFps = SettingsStore.shared.constantFps
+						if SettingsStore.shared.bitrate > 0 {
+							StreamSessionState.shared.bitrate = SettingsStore.shared.bitrate
 						}
 						self.updateHostVideoConfig()
 					}
@@ -377,12 +377,12 @@ class ParsecSDKBridge: ParsecService {
 		parsecClientCfg.video.0.decoderIndex = 1
 		parsecClientCfg.video.0.resolutionX = 0
 		parsecClientCfg.video.0.resolutionY = 0
-		parsecClientCfg.video.0.decoderH265 = SettingsHandler.decoder == .h265
+		parsecClientCfg.video.0.decoderH265 = SettingsStore.shared.decoder == .h265
 
 		parsecClientCfg.video.1.decoderIndex = 1
 		parsecClientCfg.video.1.resolutionX = 0
 		parsecClientCfg.video.1.resolutionY = 0
-		parsecClientCfg.video.1.decoderH265 = SettingsHandler.decoder == .h265
+		parsecClientCfg.video.1.decoderH265 = SettingsStore.shared.decoder == .h265
 
 		parsecClientCfg.mediaContainer = mediaContainer
 		parsecClientCfg.protocol = netProtocol

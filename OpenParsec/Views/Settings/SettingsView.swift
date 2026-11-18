@@ -195,7 +195,7 @@ struct SettingsView: View {
 	}
 
 	func saveAndExit() {
-		// SettingsHandler.renderer = renderer
+		// SettingsStore.shared.renderer = renderer
 		withAnimation(.easeInOut(duration: 0.24)) {
 			visible = false
 		}

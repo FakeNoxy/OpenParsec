@@ -6,6 +6,7 @@ struct URLImage<Placeholder: View, RemoteImage: View>: View {
 	let placeholder: () -> Placeholder
 
 	@State private var _remoteData: UIImage?
+	@State private var loaded: Bool = false
 
 	var body: some View {
 		if let img = _remoteData {
@@ -13,19 +14,15 @@ struct URLImage<Placeholder: View, RemoteImage: View>: View {
 		} else {
 			placeholder()
 				.onAppear {
-					if let url = url {
+					guard !loaded, let url = url else { return }
+					loaded = true
+					Task { @MainActor in
 						var request = URLRequest(url: url)
 						request.httpMethod = "GET"
 						request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
-
-						let task = URLSession.shared.dataTask(with: request) { (data, _, _) in
-							DispatchQueue.main.async {
-								if let data = data, let uiImage = UIImage(data: data) {
-									_remoteData = uiImage
-								}
-							}
+						if let (data, _) = try? await URLSession.shared.data(for: request), let uiImage = UIImage(data: data) {
+							_remoteData = uiImage
 						}
-						task.resume()
 					}
 				}
 		}

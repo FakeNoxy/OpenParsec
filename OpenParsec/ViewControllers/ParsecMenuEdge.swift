@@ -16,8 +16,8 @@ extension ParsecViewController {
 
 	// left brings back a hidden menu button, slide over owns the right edge
 	func updateMenuEdgeSwipe(menuHidden: Bool) {
-		menuEdgeSwipe?.isEnabled = menuHidden || SettingsHandler.menuSwipeEdge == .left
-		menuEdgeSwipeRight?.isEnabled = SettingsHandler.menuSwipeEdge == .right
+		menuEdgeSwipe?.isEnabled = menuHidden || SettingsStore.shared.menuSwipeEdge == .left
+		menuEdgeSwipeRight?.isEnabled = SettingsStore.shared.menuSwipeEdge == .right
 	}
 
 	// switching it off mid swipe would hand the held touch to the stream
@@ -36,7 +36,7 @@ extension ParsecViewController {
 	@objc func handleSingleFingerTap(_ gestureRecognizer: UITapGestureRecognizer) {
 		// Only click if the finger stayed put; a moved finger was a cursor nudge, not a tap.
 		if cursorDidMoveThisTouch { return }
-		if SettingsHandler.cursorMode == .direct { return }
+		if SettingsStore.shared.cursorMode == .direct { return }
 		let location = gestureRecognizer.location(in: gestureRecognizer.view)
 		let adjustedLocation = contentView.convert(location, from: view)
 		touchController.onTap(typeOfTap: 1, location: adjustedLocation)
@@ -50,7 +50,7 @@ extension ParsecViewController {
 			  ParsecBackgroundManager.shared.hasActiveConnection else { return }
 
 		let location: CGPoint
-		switch SettingsHandler.rightClickPosition {
+		switch SettingsStore.shared.rightClickPosition {
 		case .firstFinger:
 			location = gestureRecognizer.location(ofTouch: 0, in: gestureRecognizer.view)
 			case .secondFinger:
@@ -68,7 +68,7 @@ extension ParsecViewController {
 	}
 
 	@objc func handleLongPress(_ gestureRecognizer: UIGestureRecognizer) {
-		if SettingsHandler.cursorMode != .touchpad {
+		if SettingsStore.shared.cursorMode != .touchpad {
 			return
 		}
 		switch gestureRecognizer.state {

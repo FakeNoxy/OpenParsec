@@ -44,11 +44,11 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 	let staleMoveSlop: CGFloat = 24.0        // the moving finger must travel this far before a ghost is swept
 	var twoFingerDidMove = false            // true once a 2-finger gesture became a pinch/scroll (suppresses right-click)
 
-	var mouseSensitivity: Float { Float(SettingsHandler.mouseSensitivity) }
+	var mouseSensitivity: Float { Float(SettingsStore.shared.mouseSensitivity) }
 	// Two-finger scroll-wheel accumulation, kept separate from cursor movement.
 	var lastScrollTranslation: CGPoint = .zero
 	var accumulatedScrollY: Float = 0.0
-	var scrollWheelSpeed: Float { Float(SettingsHandler.scrollSensitivity) * 2.3 }
+	var scrollWheelSpeed: Float { Float(SettingsStore.shared.scrollSensitivity) * 2.3 }
 
 	// Input-driven cursor + viewport state (manual touch handling via TouchOverlayView).
 	var touchOverlay: TouchOverlayView!
@@ -96,7 +96,7 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 		super.init(nibName: nil, bundle: nil)
 
 		let update: () -> Void = { [weak self] in self?.updateImage() }
-		let metal = SettingsHandler.renderer == .metal ? ParsecMetalViewController(viewController: self, updateImage: update) : nil
+		let metal = SettingsStore.shared.renderer == .metal ? ParsecMetalViewController(viewController: self, updateImage: update) : nil
 		if let metal = metal, metal.metalRenderer != nil {
 			self.glkView = metal
 			CParsec.runningRenderer = .metal
@@ -173,7 +173,7 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 			// input-driven). When idle, follow the host's reported cursor so host- or keyboard-
 			// driven moves are reflected and any prediction drift is corrected.
 			if !isDragging && !clickHoldActive && !cursorMomentumActive {
-				let fingerSet = SettingsHandler.cursorMode == .direct
+				let fingerSet = SettingsStore.shared.cursorMode == .direct
 					&& abs(cursorContentPos.x - CGFloat(currentMouseX)) < 1
 					&& abs(cursorContentPos.y - CGFloat(currentMouseY)) < 1
 				cursorContentPos = CGPoint(x: CGFloat(currentMouseX), y: CGFloat(currentMouseY))
@@ -196,7 +196,7 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 	func applyFrameRate() {
 		// iPhone Duo: get max FPS from the view's screen, not UIScreen.main
 		let maxFPS = view.window?.screen.maximumFramesPerSecond ?? 60
-		let fps = SettingsHandler.preferredFramesPerSecond == 0 ? maxFPS : SettingsHandler.preferredFramesPerSecond
+		let fps = SettingsStore.shared.preferredFramesPerSecond == 0 ? maxFPS : SettingsStore.shared.preferredFramesPerSecond
 		(glkView as? ParsecMetalViewController)?.metalView.preferredFramesPerSecond = fps
 		(glkView as? ParsecGLKViewController)?.glkViewController.preferredFramesPerSecond = fps
 	}
@@ -231,7 +231,7 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 		contentView.addSubview(glkView.renderView)
 
 		if #available(iOS 15.0, *) {
-			if SettingsHandler.enablePiP {
+			if SettingsStore.shared.enablePiP {
 				if let parsecGLK = glkView as? ParsecGLKViewController, let eaglContext = parsecGLK.eaglContext {
 					PictureInPictureManager.shared.setup(sourceView: view, glContext: eaglContext)
 				} else if glkView is ParsecMetalViewController {

@@ -74,8 +74,8 @@ extension ParsecView {
 
 		ParsecView.getHostUserData()
 
-		hideOverlay = SettingsHandler.noOverlay
-		hideKeyboardButton = !SettingsHandler.showKeyboardButton
+		hideOverlay = SettingsStore.shared.noOverlay
+		hideKeyboardButton = !SettingsStore.shared.showKeyboardButton
 		parsecViewController.updateMenuEdgeSwipe(menuHidden: hideOverlay)
 		offerHint()
 
@@ -84,7 +84,7 @@ extension ParsecView {
 		let menuShown = $showMenu
 		parsecViewController.onMenuEdgeSwipe = {
 			overlayHidden.wrappedValue = false
-			keyboardButtonHidden.wrappedValue = !SettingsHandler.showKeyboardButton
+			keyboardButtonHidden.wrappedValue = !SettingsStore.shared.showKeyboardButton
 			menuShown.wrappedValue = true
 			ParsecView.getHostUserData()
 		}
@@ -108,43 +108,43 @@ extension ParsecView {
 	}
 
 	func openSettings() {
-		decoderAtOpen = SettingsHandler.decoder
-		fpsAtOpen = SettingsHandler.preferredFramesPerSecond
-		pipAtOpen = SettingsHandler.enablePiP
-		resolutionAtOpen = SettingsHandler.resolution
-		bitrateAtOpen = SettingsHandler.bitrate
+		decoderAtOpen = SettingsStore.shared.decoder
+		fpsAtOpen = SettingsStore.shared.preferredFramesPerSecond
+		pipAtOpen = SettingsStore.shared.enablePiP
+		resolutionAtOpen = SettingsStore.shared.resolution
+		bitrateAtOpen = SettingsStore.shared.bitrate
 		showMenu = false
 		if showKeyboard { toggleKeyboard() }
 		withAnimation(.easeInOut(duration: 0.24)) { showSettings = true }
 	}
 
 	func applyStreamSettings() {
-		zoomEnabled = SettingsHandler.zoomEnabled
+		zoomEnabled = SettingsStore.shared.zoomEnabled
 		parsecViewController.setZoomEnabled(zoomEnabled)
 		parsecViewController.updatePanHandle()
 		parsecViewController.positionCursorOverlay()
-		hideOverlay = SettingsHandler.noOverlay
-		hideKeyboardButton = !SettingsHandler.showKeyboardButton
+		hideOverlay = SettingsStore.shared.noOverlay
+		hideKeyboardButton = !SettingsStore.shared.showKeyboardButton
 		parsecViewController.updateMenuEdgeSwipe(menuHidden: hideOverlay)
 		offerHint()
 
 		var hostConfigChanged = false
-		if SettingsHandler.resolution != resolutionAtOpen {
-			StreamSessionState.shared.resolutionX = SettingsHandler.resolution.width
-			StreamSessionState.shared.resolutionY = SettingsHandler.resolution.height
+		if SettingsStore.shared.resolution != resolutionAtOpen {
+			StreamSessionState.shared.resolutionX = SettingsStore.shared.resolution.width
+			StreamSessionState.shared.resolutionY = SettingsStore.shared.resolution.height
 			hostConfigChanged = true
 		}
-		if SettingsHandler.constantFps != StreamSessionState.shared.constantFps {
-			StreamSessionState.shared.constantFps = SettingsHandler.constantFps
+		if SettingsStore.shared.constantFps != StreamSessionState.shared.constantFps {
+			StreamSessionState.shared.constantFps = SettingsStore.shared.constantFps
 			hostConfigChanged = true
 		}
 		if hostConfigChanged { CParsec.updateHostVideoConfig() }
-		if SettingsHandler.bitrate != bitrateAtOpen { applyBitrate() }
-		if SettingsHandler.preferredFramesPerSecond != fpsAtOpen { parsecViewController.applyFrameRate() }
-		if SettingsHandler.enablePiP != pipAtOpen {
+		if SettingsStore.shared.bitrate != bitrateAtOpen { applyBitrate() }
+		if SettingsStore.shared.preferredFramesPerSecond != fpsAtOpen { parsecViewController.applyFrameRate() }
+		if SettingsStore.shared.enablePiP != pipAtOpen {
 			ParsecBackgroundManager.shared.reconnectPending = true
 			disconnect()
-		} else if SettingsHandler.decoder != decoderAtOpen {
+		} else if SettingsStore.shared.decoder != decoderAtOpen {
 			reconnectToApply()
 		}
 	}
@@ -223,7 +223,7 @@ extension ParsecView {
 	}
 
 	func changeResolution(res: ParsecResolution) {
-        SettingsHandler.resolution = res
+        SettingsStore.shared.resolution = res
 		DispatchQueue.main.async {
 			StreamSessionState.shared.resolutionX = res.width
 			StreamSessionState.shared.resolutionY = res.height
@@ -232,12 +232,12 @@ extension ParsecView {
 	}
 
 	func changeBitRate(bitrate: Int) {
-		SettingsHandler.bitrate = bitrate
+		SettingsStore.shared.bitrate = bitrate
 		applyBitrate()
 	}
 
 	func applyBitrate() {
-		let target = SettingsHandler.bitrate > 0 ? SettingsHandler.bitrate : StreamSessionState.shared.hostDefaultBitrate
+		let target = SettingsStore.shared.bitrate > 0 ? SettingsStore.shared.bitrate : StreamSessionState.shared.hostDefaultBitrate
 		guard target > 0, target != StreamSessionState.shared.bitrate else { return }
 		StreamSessionState.shared.bitrate = target
 		CParsec.updateHostVideoConfig()
@@ -247,7 +247,7 @@ extension ParsecView {
 		DispatchQueue.main.async {
 			StreamSessionState.shared.constantFps.toggle()
 			CParsec.updateHostVideoConfig()
-			SettingsHandler.constantFps = StreamSessionState.shared.constantFps
+			SettingsStore.shared.constantFps = StreamSessionState.shared.constantFps
 		}
 	}
 
@@ -262,13 +262,13 @@ extension ParsecView {
 		DispatchQueue.main.async {
 			zoomEnabled.toggle()
 			parsecViewController.setZoomEnabled(zoomEnabled)
-			SettingsHandler.zoomEnabled = zoomEnabled
+			SettingsStore.shared.zoomEnabled = zoomEnabled
 		}
 	}
 
 	func toggleTouchMode() {
 		DispatchQueue.main.async {
-			SettingsHandler.cursorMode = SettingsHandler.cursorMode == .direct ? .touchpad : .direct
+			SettingsStore.shared.cursorMode = SettingsStore.shared.cursorMode == .direct ? .touchpad : .direct
 			parsecViewController.updatePanHandle()
 		}
 	}

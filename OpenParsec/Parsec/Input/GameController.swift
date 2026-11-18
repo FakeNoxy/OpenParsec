@@ -106,11 +106,11 @@ class GamepadController {
 				}
 			}
 			mouse.mouseInput?.mouseMovedHandler={(_: GCMouseInput, v: Float, v2: Float) in
-				CParsec.sendMouseDelta(Int32(v/1.25 * Float(SettingsHandler.mouseSensitivity)), Int32(-v2/1.25 * Float(SettingsHandler.mouseSensitivity)))
+				CParsec.sendMouseDelta(Int32(v/1.25 * Float(SettingsStore.shared.mouseSensitivity)), Int32(-v2/1.25 * Float(SettingsStore.shared.mouseSensitivity)))
 				}
 			var accumulatedScrollX: Float = 0
 			mouse.mouseInput?.scroll.yAxis.valueChangedHandler = {(_: GCControllerAxisInput, value: Float) in
-				accumulatedScrollX += SettingsHandler.reverseScrollDirection ? -value : value
+				accumulatedScrollX += SettingsStore.shared.reverseScrollDirection ? -value : value
 				let wheelX = Int32(accumulatedScrollX)
 				accumulatedScrollX -= Float(wheelX)
 				if wheelX != 0 {
@@ -119,7 +119,7 @@ class GamepadController {
 			}
 			var accumulatedScrollY: Float = 0
 			mouse.mouseInput?.scroll.xAxis.valueChangedHandler = {(_: GCControllerAxisInput, value: Float) in
-				accumulatedScrollY += SettingsHandler.reverseScrollDirection ? -value : value
+				accumulatedScrollY += SettingsStore.shared.reverseScrollDirection ? -value : value
 				let wheelY = Int32(accumulatedScrollY)
 				accumulatedScrollY -= Float(wheelY)
 				if wheelY != 0 {

@@ -10,7 +10,7 @@ extension ParsecViewController {
 				altKeyHeld = true
 			}
 
-			if SettingsHandler.optionAsCommand && !isModifierKey(key.keyCode) && (altKeyHeld || key.modifierFlags.contains(.alternate)) {
+			if SettingsStore.shared.optionAsCommand && !isModifierKey(key.keyCode) && (altKeyHeld || key.modifierFlags.contains(.alternate)) {
 				if !optCmdRemapActive {
 					CParsec.sendKeyboardMessage(keyCode: 226, pressed: false)
 					CParsec.sendKeyboardMessage(keyCode: 230, pressed: false)

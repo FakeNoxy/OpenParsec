@@ -1,20 +1,16 @@
 import SwiftUI
-import os
 
 struct LoginView: View {
 	var controller: ContentView?
+	@ObservedObject var viewModel: LoginViewModel
 
 	@State var inputEmail: String = ""
 	@State var inputPassword: String = ""
 	@State var inputTFA: String = ""
-	@State var isTFAOn: Bool = false
-	@State private var presentTFAAlert = false
-	@State var isLoading: Bool = false
-	@State var showAlert: Bool = false
-	@State var alertText: String = ""
 
-	init(_ controller: ContentView?) {
+	init(_ controller: ContentView?, viewModel: LoginViewModel) {
 		self.controller = controller
+		self.viewModel = viewModel
 	}
 
 	var body: some View {
@@ -65,22 +61,22 @@ struct LoginView: View {
 
 			.padding()
 			.frame(maxWidth: 400)
-			.disabled(isLoading) // Disable when loading
+			.disabled(viewModel.isLoading) // Disable when loading
 
 			// Loading elements
-			if isLoading || presentTFAAlert {
+			if viewModel.isLoading || viewModel.presentTFAAlert {
 				ZStack {
 					Rectangle() // Darken background
 						.fill(Color.black)
 						.opacity(0.5)
 						.edgesIgnoringSafeArea(.all)
 					VStack {
-						if isLoading {
-							ActivityIndicator(isAnimating: $isLoading, style: .large, tint: .white)
+						if viewModel.isLoading {
+							ActivityIndicator(isAnimating: $viewModel.isLoading, style: .large, tint: .white)
 							 .padding()
 						 Text("Loading...")
 							 .multilineTextAlignment(.center)
-						} else if presentTFAAlert {
+						} else if viewModel.presentTFAAlert {
 							Text("Please enter your 2FA code from your authenticator app")
 								.multilineTextAlignment(.center)
 							SecureField("2FA Code", text: $inputTFA)
@@ -92,7 +88,7 @@ struct LoginView: View {
 								.autocapitalization(/*@START_MENU_TOKEN@*/.none/*@END_MENU_TOKEN@*/)
 								.textContentType(.oneTimeCode)
 							HStack {
-								Button(action: {presentTFAAlert = false}) {
+								Button(action: {viewModel.presentTFAAlert = false}) {
 									ZStack {
 										Rectangle()
 											.fill(Color("BackgroundButton"))
@@ -123,28 +119,17 @@ struct LoginView: View {
 			}
 		}
 		.foregroundColor(Color("Foreground"))
-		.alert(isPresented: $showAlert) {
-			Alert(title: Text("Login Failed"), message: Text(alertText))
+		.alert(isPresented: $viewModel.showAlert) {
+			Alert(title: Text("Login Failed"), message: Text(viewModel.alertText))
 		}
 		.onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in retryRestore() }
 		.onReceive(NotificationCenter.default.publisher(for: UIApplication.protectedDataDidBecomeAvailableNotification)) { _ in retryRestore() }
 	}
 
 	func retryRestore() {
-		if !isLoading && !presentTFAAlert, let c = controller {
+		if !viewModel.isLoading && !viewModel.presentTFAAlert, let c = controller {
 			c.retryRestore()
 		}
-	}
-
-	func saveToKeychain(data: Data, key: String) {
-		SecItemDelete([kSecClass as String: kSecClassGenericPassword, kSecAttrAccount as String: key] as CFDictionary)
-		let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword, kSecAttrAccount as String: key, kSecValueData as String: data, kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock]
-		let status = SecItemAdd(query as CFDictionary, nil)
-		guard status == errSecSuccess else {
-			print("Error saving to Keychain: \(status)")
-			return
-		}
-		print("Data saved to Keychain.")
 	}
 
 	func authenticate(_ tfa: String? = "") {
@@ -157,84 +142,12 @@ struct LoginView: View {
 		}
 		#endif
 
-		withAnimation { isLoading = true }
-
-		let apiURL = URL(string: "https://kessel-api.parsec.app/v1/auth")!
-
-		var request = URLRequest(url: apiURL)
-		request.httpMethod = "POST"
-		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-		request.setValue("parsec/150-93b Windows/11 libmatoya/4.0", forHTTPHeaderField: "User-Agent")
-		request.httpBody = try? JSONSerialization.data(withJSONObject:
-		[
-			"email": inputEmail,
-			"password": inputPassword,
-			"tfa": tfa
-		], options: [])
-
-		let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-			DispatchQueue.main.async {
-				isLoading = false
-				if let data = data {
-					guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
-						alertText = "Bad response from the server"
-						showAlert = true
-						return
-					}
-					let decoder = JSONDecoder()
-
-					if statusCode == 201 { // 201 Created
-						// store it and recover it from the next app opening, so people won't swear
-						guard let info: ClientInfo = try? decoder.decode(ClientInfo.self, from: data) else {
-							alertText = "Bad response from the server"
-							showAlert = true
-							return
-						}
-						NetworkHandler.clinfo = info
-
-						saveToKeychain(data: data, key: AppConstants.sessionKeyChainKey)
-
-						if let c = controller {
-							print("*** Login succeeded! ***")
-							c.setView(.main)
-						}
-					} else if statusCode >= 400 { // 4XX client errors
-						guard let info: ErrorInfo = try? decoder.decode(ErrorInfo.self, from: data) else {
-							alertText = "Login failed (HTTP \(statusCode))"
-							showAlert = true
-							return
-						}
-
-						let json = try? JSONSerialization.jsonObject(with: data, options: [])
-						if let dict = json as? [String: Any], let isTFARequired = dict["tfa_required"] as? Bool {
-							print("Code output:")
-							print(dict)
-							if isTFARequired {
-								presentTFAAlert = true
-							} else {
-								alertText = "Error: \(info)"
-								showAlert = true
-							}
-						} else {
-							alertText = info.error
-							showAlert = true
-						}
-					} else {
-						alertText = "Login failed (HTTP \(statusCode))"
-						showAlert = true
-					}
-				} else {
-					alertText = error?.localizedDescription ?? "Could not reach the server"
-					showAlert = true
-				}
-			}
-		}
-		task.resume()
+		viewModel.authenticate(email: inputEmail, password: inputPassword, tfa: tfa)
 	}
 }
 
 struct LoginView_Previews: PreviewProvider {
 	static var previews: some View {
-		LoginView(nil)
+		LoginView(nil, viewModel: LoginViewModel())
 	}
 }

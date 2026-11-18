@@ -59,8 +59,8 @@ struct ParsecView: View {
 	init(_ controller: ContentView?) {
 		self.controller = controller
 
-		_muted = State(initialValue: SettingsHandler.startMuted)
-		_zoomEnabled = State(initialValue: SettingsHandler.zoomEnabled)
+		_muted = State(initialValue: SettingsStore.shared.startMuted)
+		_zoomEnabled = State(initialValue: SettingsStore.shared.zoomEnabled)
 		_resolutions = State(initialValue: ParsecResolution.resolutions)
 		_bitrates = State(initialValue: ParsecResolution.bitrates)
 
@@ -203,7 +203,7 @@ struct ParsecView: View {
 			}
 			.zIndex(2)
 		}
-		.statusBarHidden(SettingsHandler.hideStatusBar)
+		.statusBarHidden(SettingsStore.shared.hideStatusBar)
 		.alert(isPresented: $showDCAlert) {
 			Alert(title: Text(DCAlertText),
 				  primaryButton: .default(Text("Reconnect"), action: {
@@ -223,11 +223,11 @@ struct ParsecView: View {
 				  }),
 				  secondaryButton: .cancel(Text("Close"), action: {disconnect()}))
 		}
-		.onChange(of: showSettings) { open in
-			if !open { applyStreamSettings() }
+		.onChange(of: showSettings) { _, newValue in
+			if !newValue { applyStreamSettings() }
 		}
-		.onChange(of: isReconnecting) { reconnecting in
-			if !reconnecting {
+		.onChange(of: isReconnecting) { _, newValue in
+			if !newValue {
 				CParsec.setMuted(muted)
 				if muted { CParsec.pause(video: false, audio: true) }
 			}

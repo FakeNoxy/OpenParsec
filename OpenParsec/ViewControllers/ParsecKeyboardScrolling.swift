@@ -32,10 +32,10 @@ extension ParsecViewController {
 			}
 			keyboardCoversPicture = height > 0
 			updatePanHandle()
-			if height > 0 && SettingsHandler.cursorMode == .direct {
+			if height > 0 && SettingsStore.shared.cursorMode == .direct {
 				onKeyboardCoversPicture?()
 			}
-			if SettingsHandler.cursorMode == .direct {
+			if SettingsStore.shared.cursorMode == .direct {
 				let bottomY = max(0, scrollView.contentSize.height - scrollView.bounds.height + height)
 				scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: bottomY), animated: true)
 				onKeyboardVisibilityChanged?(true)
@@ -72,7 +72,7 @@ extension ParsecViewController {
 	}
 
 	func updatePanHandle() {
-		setPanHandleVisible(keyboardCoversPicture && SettingsHandler.cursorMode == .direct)
+		setPanHandleVisible(keyboardCoversPicture && SettingsStore.shared.cursorMode == .direct)
 	}
 
 	func setPanHandleVisible(_ visible: Bool) {

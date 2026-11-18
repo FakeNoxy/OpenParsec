@@ -25,7 +25,7 @@ class ParsecMetalViewController: ParsecRendererView {
 		metalView.colorPixelFormat = .bgra8Unorm
 		metalView.clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
 		metalView.autoResizeDrawable = false
-		let fps = SettingsHandler.preferredFramesPerSecond
+		let fps = SettingsStore.shared.preferredFramesPerSecond
 		// iPhone Duo: get max FPS from the view's screen, not UIScreen.main
 		let maxFPS = metalView.window?.screen.maximumFramesPerSecond ?? 60
 		metalView.preferredFramesPerSecond = fps == 0 ? maxFPS : fps

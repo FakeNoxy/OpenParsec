@@ -2,6 +2,7 @@ import SwiftUI
 import ParsecSDK
 import Foundation
 import AVFoundation
+import Combine
 
 struct ParsecStatusBar: View {
 	@Binding var showMenu: Bool
@@ -35,7 +36,7 @@ struct ParsecStatusBar: View {
 
 	var body: some View {
 		// Overlay elements
-		if showMenu || SettingsHandler.alwaysShowStatus {
+		if showMenu || SettingsStore.shared.alwaysShowStatus {
 			VStack {
 				Text(metricInfo)
 					.frame(minWidth: 200, maxWidth: .infinity, maxHeight: 20)
@@ -117,7 +118,7 @@ struct ParsecStatusBar: View {
 			if offline {
 				appNote("[stream] no network, not waiting on sdk")
 				status = NETWORK_ERR_INTERRUPTED
-			} else if SettingsHandler.autoReconnect && NetworkWatcher.shared.interfaceChanges != seenInterfaceChanges {
+			} else if SettingsStore.shared.autoReconnect && NetworkWatcher.shared.interfaceChanges != seenInterfaceChanges {
 				appNote("[stream] network interface changed, reconnecting")
 				status = NETWORK_ERR_INTERRUPTED
 			}
@@ -153,7 +154,7 @@ struct ParsecStatusBar: View {
 			if offline && !pipActive {
 				isReconnecting = false
 				connectionLost = false
-				if SettingsHandler.autoReconnect && ParsecBackgroundManager.shared.lastPeerId != nil {
+				if SettingsStore.shared.autoReconnect && ParsecBackgroundManager.shared.lastPeerId != nil {
 					ParsecBackgroundManager.shared.reconnectAttempts = 0
 					waitingForNetwork = true
 					appNote("[stream] no network, waiting")
@@ -191,7 +192,7 @@ struct ParsecStatusBar: View {
 				return
 			}
 
-			if SettingsHandler.autoReconnect, !status.isPermanentFailure || (status == CONNECT_WRN_APPROVAL && setupFailure != nil), let peerId = ParsecBackgroundManager.shared.lastPeerId {
+			if SettingsStore.shared.autoReconnect, !status.isPermanentFailure || (status == CONNECT_WRN_APPROVAL && setupFailure != nil), let peerId = ParsecBackgroundManager.shared.lastPeerId {
 				let mgr = ParsecBackgroundManager.shared
 				if mgr.reconnectAttempts < 3 {
 					let gap: TimeInterval = mgr.reconnectAttempts == 0 ? 0 : mgr.reconnectAttempts == 1 ? 2 : 5
@@ -211,7 +212,7 @@ struct ParsecStatusBar: View {
 
 			isReconnecting = false
 			wasDisconnected = true
-			let silent = SettingsHandler.autoReconnect && !SettingsHandler.errorPrompts && !status.isPermanentFailure
+			let silent = SettingsStore.shared.autoReconnect && !SettingsStore.shared.errorPrompts && !status.isPermanentFailure
 			appNote("[stream] ended, status \(status.rawValue), \(silent ? "silent" : "alert")")
 			if silent {
 				// silent: auto-reconnect spent its retries, dont nag with an alert
@@ -246,7 +247,7 @@ struct ParsecStatusBar: View {
 			}
 		}
 
-		if showMenu || SettingsHandler.alwaysShowStatus {
+		if showMenu || SettingsStore.shared.alwaysShowStatus {
 			let str = String.fromBuffer(&pcs.decoder.0.name.0, length: 16)
 			metricInfo = "Decode \(String(format: "%.2f", pcs.`self`.metrics.0.decodeLatency))ms    Encode \(String(format: "%.2f", pcs.`self`.metrics.0.encodeLatency))ms    Network \(String(format: "%.2f", pcs.`self`.metrics.0.networkLatency))ms    Bitrate \(String(format: "%.2f", pcs.`self`.metrics.0.bitrate))Mbps    RTx \(pcs.`self`.metrics.0.fastRTs + pcs.`self`.metrics.0.slowRTs)    Queue \(pcs.`self`.metrics.0.queuedFrames)    Draw \(String(format: "%.0f", CParsec.drawRate))fps \(CParsec.rendererName)    \(pcs.decoder.0.h265 ? "H265" : "H264") \(pcs.decoder.0.width)x\(pcs.decoder.0.height) \(pcs.decoder.0.color444 ? "4:4:4" : "4:2:0") \(str)"
 		}
