@@ -1,0 +1,556 @@
+import ParsecSDK
+import MetalKit
+import UIKit
+import os
+
+
+class ParsecSDKBridge: ParsecService {
+	var hostWidth: Float = 1920
+
+	var hostHeight: Float = 1080
+
+	static let PARSEC_VER: UInt32 = UInt32((PARSEC_VER_MAJOR << 16) | PARSEC_VER_MINOR)
+
+	private var _parsec: OpaquePointer!
+	private var _audio: OpaquePointer!
+	private let _audioPtr: UnsafeRawPointer
+
+	private var isVirtualShiftOn = false
+
+	public var clientWidth: Float = 1920
+	public var clientHeight: Float = 1080
+	private var hasFrame = false
+
+	public var netProtocol: Int32 = 1
+	public var mediaContainer: Int32 = 0
+	public var pngCursor: Bool = false
+	private let generationLock = NSLock()
+	private var currentGeneration = 0
+	private var pollGeneration: Int {
+		get {
+			generationLock.lock()
+			defer { generationLock.unlock() }
+			return currentGeneration
+		}
+		set {
+			generationLock.lock()
+			currentGeneration = newValue
+			generationLock.unlock()
+		}
+	}
+	/// Decodes host user-data events (see `UserDataHandler`).
+	private var userDataHandler: UserDataHandler?
+	private var didReleaseOnConnect = false
+	private var capsLock = false
+
+	public var mouseInfo = MouseInfo()
+
+	init() {
+		os_log("%{public}@", log: sdkLog, "Parsec SDK Version: " + String(ParsecSDKBridge.PARSEC_VER))
+		let runtimeVer = ParsecVersion()
+		os_log("%{public}@", log: sdkLog, "Parsec SDK binary: \(runtimeVer >> 16).\(runtimeVer & 0xFFFF)")
+
+		ParsecSetLogCallback(
+			{ (level, msg, _) in
+				let line = "[\(level == LOG_DEBUG ? "D" : "I")] \(String(cString: msg!))"
+				os_log("%{public}@", log: sdkLog, type: level == LOG_DEBUG ? .info : .default, line)
+				ConnectionLog.shared.add("sdk \(line)")
+				if line.contains("signal_") && line.contains("] = -") {
+					let at = Date()
+					DispatchQueue.main.async { CParsec.setupError = (line, at) }
+				}
+			}, nil)
+
+		audio_init(&_audio)
+
+		self._audioPtr = UnsafeRawPointer(_audio)
+
+		do {
+			let reservedCfg = ["ssHost": "kessel-ws.parsec.app"]
+			let json = JSONEncoder()
+			var jsonData = try json.encode(reservedCfg)
+			jsonData.append(0)
+			jsonData.withUnsafeBytes { (jsonStrBPtr: UnsafeRawBufferPointer) in
+				guard let jsonStrPtr = jsonStrBPtr.baseAddress else {
+					return
+				}
+				ParsecInit(ParsecSDKBridge.PARSEC_VER, nil, jsonStrPtr, &_parsec)
+			}
+
+		} catch {
+			print("error: \(error)")
+		}
+
+		if _parsec != nil {
+			userDataHandler = UserDataHandler(_parsec)
+		}
+	}
+
+	deinit {
+		ParsecDestroy(_parsec)
+		audio_destroy(&_audio)
+	}
+
+	func connect(_ peerID: String) -> ParsecStatus {
+
+		var parsecClientCfg = ParsecClientConfig()
+		parsecClientCfg.video.0.decoderIndex = 1
+        // Use saved resolution from SettingsStore
+		parsecClientCfg.video.0.resolutionX = Int32(SettingsStore.shared.resolution.width)
+		parsecClientCfg.video.0.resolutionY = Int32(SettingsStore.shared.resolution.height)
+		parsecClientCfg.video.0.decoderH265 = SettingsStore.shared.decoder == .h265
+
+		parsecClientCfg.video.1.decoderIndex = 1
+		parsecClientCfg.video.1.resolutionX = Int32(SettingsStore.shared.resolution.width)
+		parsecClientCfg.video.1.resolutionY = Int32(SettingsStore.shared.resolution.height)
+		parsecClientCfg.video.1.decoderH265 = SettingsStore.shared.decoder == .h265
+
+		parsecClientCfg.mediaContainer = 0
+		parsecClientCfg.protocol = 1
+		// parsecClientCfg.secret = ""
+		parsecClientCfg.pngCursor = false
+
+		self.startBackgroundTask()
+		didReleaseOnConnect = false
+
+		let status = ParsecClientConnect(_parsec, &parsecClientCfg, SessionStore.clinfo?.session_id, peerID)
+
+		if status == PARSEC_OK || status == PARSEC_CONNECTING {
+			ParsecBackgroundManager.shared.connectionDidStart()
+		}
+
+		return status
+	}
+
+	func disconnect() {
+
+		pollGeneration += 1
+		// must go before the disconnect, after it the release never reaches the host
+		sendReleaseMessage()
+		ParsecClientDisconnect(_parsec)
+		audio_clear(&_audio)
+
+		ParsecBackgroundManager.shared.connectionDidEnd()
+	}
+
+	func reconnect(_ peerID: String) -> ParsecStatus {
+		sendReleaseMessage()
+		pollGeneration += 1
+		userDataHandler?.resetResolutionLatch()
+		ParsecClientDisconnect(_parsec)
+		audio_clear(&_audio)
+		audio_hold(false, _audioPtr)
+		ParsecBackgroundManager.shared.connectionDidEnd()
+		let status = connect(peerID)
+		if status != PARSEC_OK && status != PARSEC_CONNECTING {
+			ParsecBackgroundManager.shared.connectionDidEnd()
+		}
+		return status
+	}
+
+	func sendReleaseMessage() {
+		var msg = ParsecMessage()
+		msg.type = MESSAGE_RELEASE
+		ParsecClientSendMessage(_parsec, &msg)
+		isVirtualShiftOn = false
+		DispatchQueue.main.async {
+			NotificationCenter.default.post(name: NSNotification.Name("ParsecInputReleased"), object: nil)
+		}
+	}
+
+	@discardableResult
+	func pause(video: Bool = true, audio: Bool = true) -> ParsecStatus {
+		let status = ParsecClientPause(_parsec, video, audio)
+		if audio {
+			audio_hold(true, _audioPtr)
+		}
+		return status
+	}
+
+	@discardableResult
+	func resume() -> ParsecStatus {
+		audio_hold(false, _audioPtr)
+		return ParsecClientPause(_parsec, false, false)
+	}
+
+	func getStatus() -> ParsecStatus {
+
+		return ParsecClientGetStatus(_parsec, nil)
+	}
+
+	func getStatusEx(_ pcs: inout ParsecClientStatus) -> ParsecStatus {
+		let ans = ParsecClientGetStatus(_parsec, &pcs)
+		if pcs.decoder.0.width > 0 && pcs.decoder.0.height > 0 {
+			self.hostHeight = Float(pcs.decoder.0.height)
+			self.hostWidth = Float(pcs.decoder.0.width)
+		}
+
+		// the teardown release may not have made it out, this one goes over a socket we know is live
+		if ans == PARSEC_OK && !didReleaseOnConnect {
+			didReleaseOnConnect = true
+			sendReleaseMessage()
+		}
+
+		return ans
+	}
+
+	func setFrame(_ width: CGFloat, _ height: CGFloat, _ scale: CGFloat) {
+
+		ParsecClientSetDimensions(_parsec, UInt8(DEFAULT_STREAM), UInt32(width), UInt32(height), Float(scale))
+
+		let oldSize = CGSize(width: CGFloat(clientWidth), height: CGFloat(clientHeight))
+		clientWidth = Float(width)
+		clientHeight = Float(height)
+		guard hasFrame, oldSize.width > 0, oldSize.height > 0 else {
+			hasFrame = true
+			mouseInfo.mouseX = Int32(width / 2)
+			mouseInfo.mouseY = Int32(height / 2)
+			return
+		}
+		let moved = carryCursor(CGPoint(x: CGFloat(mouseInfo.mouseX), y: CGFloat(mouseInfo.mouseY)), from: oldSize, to: CGSize(width: width, height: height))
+		mouseInfo.mouseX = Int32(moved.x.rounded())
+		mouseInfo.mouseY = Int32(moved.y.rounded())
+	}
+
+	private func carryCursor(_ point: CGPoint, from old: CGSize, to new: CGSize) -> CGPoint {
+		let host = CGSize(width: CGFloat(hostWidth), height: CGFloat(hostHeight))
+		guard host.width > 0, host.height > 0 else {
+			return CGPoint(x: point.x * new.width / old.width, y: point.y * new.height / old.height)
+		}
+		let oldScale = min(old.width / host.width, old.height / host.height)
+		let newScale = min(new.width / host.width, new.height / host.height)
+		let hostX = (point.x - (old.width - host.width * oldScale) / 2) / oldScale
+		let hostY = (point.y - (old.height - host.height * oldScale) / 2) / oldScale
+		let x = hostX * newScale + (new.width - host.width * newScale) / 2
+		let y = hostY * newScale + (new.height - host.height * newScale) / 2
+		return CGPoint(x: min(max(x, 0), new.width), y: min(max(y, 0), new.height))
+	}
+
+	// timeout in ms, 16 == 60 FPS, 8 == 120 FPS, etc.
+	func renderGLFrame(timeout: UInt32 = 16) {
+
+		ParsecClientGLRenderFrame(_parsec, UInt8(DEFAULT_STREAM), nil, nil, timeout)
+	}
+
+	func glDestroy() {
+		ParsecClientGLDestroy(_parsec, UInt8(DEFAULT_STREAM))
+	}
+
+	func pollFrame(timeout: UInt32, callback: ParsecFrameCallback, opaque: UnsafeRawPointer) -> ParsecStatus {
+		ParsecClientPollFrame(_parsec, UInt8(DEFAULT_STREAM), callback, timeout, opaque)
+	}
+
+	@discardableResult
+	func pollAudio(timeout: UInt32 = 16) -> ParsecStatus { // timeout in ms, 16 == 60 FPS, 8 == 120 FPS, etc.
+		return ParsecClientPollAudio(_parsec, audio_cb, timeout, _audioPtr)
+	}
+
+	var mousePositionRelative = false
+
+	@discardableResult
+	func pollEvent(timeout: UInt32 = 16, sawCursor: inout Bool) -> Bool { // timeout in ms, 16 == 60 FPS, 8 == 120 FPS, etc.
+		var e: ParsecClientEvent!
+		var _event = ParsecClientEvent()
+		var pollSuccess = false
+		withUnsafeMutablePointer(to: &_event, {(_eventPtr) in
+			pollSuccess = ParsecClientPollEvents(_parsec, timeout, _eventPtr)
+			e = _eventPtr.pointee
+		})
+		if !pollSuccess {
+			return ParsecClientGetStatus(_parsec, nil) != PARSEC_OK
+		}
+		if e.type == CLIENT_EVENT_CURSOR {
+			handleCursorEvent(event: e.cursor, sawCursor: &sawCursor)
+		} else if e.type == CLIENT_EVENT_USER_DATA {
+			handleUserDataEvent(event: e.userData)
+		} else if e.type == CLIENT_EVENT_STREAM {
+			os_log("%{public}@", log: sdkLog, "[stream] s=\(e.stream.stream) status=\(e.stream.status.rawValue)")
+		} else if e.type == CLIENT_EVENT_BLOCKED {
+			DispatchQueue.main.async { StreamSessionState.shared.isBlocked = true }
+		} else if e.type == CLIENT_EVENT_UNBLOCKED {
+			DispatchQueue.main.async { StreamSessionState.shared.isBlocked = false }
+		}
+		return false
+	}
+
+	func handleUserDataEvent(event: ParsecClientUserDataEvent) {
+		userDataHandler?.handle(event: event)
+	}
+
+	func handleCursorEvent(event: ParsecClientCursorEvent, sawCursor: inout Bool) {
+		let prevHidden = mouseInfo.cursorHidden
+		mouseInfo.cursorHidden = event.cursor.hidden
+		mouseInfo.mousePositionRelative = event.cursor.relative
+
+		if event.cursor.imageUpdate || !sawCursor {
+			sawCursor = true
+			let imgKey = event.key
+			let pointer = ParsecGetBuffer(_parsec, imgKey)
+			if pointer == nil {
+				return
+			}
+			let size = event.cursor.size
+			let width = event.cursor.width
+			let height = event.cursor.height
+			guard width > 0, height > 0, Int(size) >= Int(width) * Int(height) * 4 else {
+				ParsecFree(pointer)
+				return
+			}
+			mouseInfo.cursorWidth = Int(width)
+			mouseInfo.cursorHeight = Int(height)
+
+			if prevHidden && !event.cursor.hidden {
+				mouseInfo.mouseX = Int32(event.cursor.positionX)
+				mouseInfo.mouseY = Int32(event.cursor.positionY)
+			}
+
+			mouseInfo.cursorHotX = Int(event.cursor.hotX)
+			mouseInfo.cursorHotY = Int(event.cursor.hotY)
+
+			let elmentLength: Int = 4
+			let render: CGColorRenderingIntent = CGColorRenderingIntent.defaultIntent
+			let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
+			let bitmapInfo: CGBitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue)
+			if let providerRef = CGDataProvider(data: NSData(bytes: pointer, length: Int(size))),
+				let cgimage = CGImage(width: Int(width), height: Int(height), bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: Int(width) * elmentLength, space: rgbColorSpace, bitmapInfo: bitmapInfo, provider: providerRef, decode: nil, shouldInterpolate: true, intent: render) {
+				mouseInfo.cursorImg = cgimage
+			}
+			ParsecFree(pointer)
+		}
+	}
+
+	func setMuted(_ muted: Bool) {
+		audio_mute(muted, _audioPtr)
+	}
+
+	func applyConfig() {
+
+		var parsecClientCfg = ParsecClientConfig()
+
+		parsecClientCfg.video.0.decoderIndex = 1
+		parsecClientCfg.video.0.resolutionX = 0
+		parsecClientCfg.video.0.resolutionY = 0
+		parsecClientCfg.video.0.decoderH265 = SettingsStore.shared.decoder == .h265
+
+		parsecClientCfg.video.1.decoderIndex = 1
+		parsecClientCfg.video.1.resolutionX = 0
+		parsecClientCfg.video.1.resolutionY = 0
+		parsecClientCfg.video.1.decoderH265 = SettingsStore.shared.decoder == .h265
+
+		parsecClientCfg.mediaContainer = mediaContainer
+		parsecClientCfg.protocol = netProtocol
+		// parsecClientCfg.secret = ""
+		parsecClientCfg.pngCursor = pngCursor
+
+		ParsecClientSetConfig(_parsec, &parsecClientCfg)
+	}
+
+	func sendMouseMessage(_ button: ParsecMouseButton, _ x: Int32, _ y: Int32, _ pressed: Bool) {
+		// Send the mouse position
+		sendMousePosition(x, y)
+
+		// Send the mouse button state
+		var buttonMessage = ParsecMessage()
+		buttonMessage.type = MESSAGE_MOUSE_BUTTON
+		buttonMessage.mouseButton.button = button
+		buttonMessage.mouseButton.pressed = pressed
+		ParsecClientSendMessage(_parsec, &buttonMessage)
+	}
+
+	func sendMouseClickMessage(_ button: ParsecMouseButton, _ pressed: Bool) {
+		var buttonMessage = ParsecMessage()
+		buttonMessage.type = MESSAGE_MOUSE_BUTTON
+		buttonMessage.mouseButton.button = button
+		buttonMessage.mouseButton.pressed = pressed
+		ParsecClientSendMessage(_parsec, &buttonMessage)
+	}
+
+	func sendMouseDelta(_ dx: Int32, _ dy: Int32) {
+		if mouseInfo.mousePositionRelative {
+			sendMouseRelativeMove(dx, dy)
+		} else {
+			sendMousePosition(mouseInfo.mouseX + dx, mouseInfo.mouseY + dy)
+		}
+
+	}
+	static func clamp<T>(_ value: T, minValue: T, maxValue: T) -> T where T: Comparable {
+		return min(max(value, minValue), maxValue)
+	}
+
+	func sendMousePosition(_ x: Int32, _ y: Int32) {
+		mouseInfo.mouseX = ParsecSDKBridge.clamp(x, minValue: 0, maxValue: Int32(self.clientWidth))
+		mouseInfo.mouseY = ParsecSDKBridge.clamp(y, minValue: 0, maxValue: Int32(self.clientHeight))
+		var motionMessage = ParsecMessage()
+		motionMessage.type = MESSAGE_MOUSE_MOTION
+		motionMessage.mouseMotion.x = x
+		motionMessage.mouseMotion.y = y
+		ParsecClientSendMessage(_parsec, &motionMessage)
+	}
+
+	func sendMouseRelativeMove(_ dx: Int32, _ dy: Int32) {
+		var motionMessage = ParsecMessage()
+		motionMessage.type = MESSAGE_MOUSE_MOTION
+		motionMessage.mouseMotion.x = dx
+		motionMessage.mouseMotion.y = dy
+		motionMessage.mouseMotion.relative = true
+		ParsecClientSendMessage(_parsec, &motionMessage)
+	}
+
+	func getKeyCodeByText(text: String) -> (ParsecKeycode?, Bool) {
+		let (keyCode, useShift) = TextKeycodeResolver.resolve(text: text)
+		return (keyCode, useShift)
+	}
+
+	func sendVirtualKeyboardInput(text: String) {
+		let (keyCode, useShift) = getKeyCodeByText(text: text)
+
+		guard let keyCode else {
+			return
+		}
+		var keyboardMessagePress = ParsecMessage()
+		keyboardMessagePress.type = MESSAGE_KEYBOARD
+		let sendShift = !isVirtualShiftOn && useShift
+		if sendShift {
+			keyboardMessagePress.keyboard = ParsecKeyboardMessage(code: KEY_LSHIFT, mod: MOD_NONE, pressed: true, __pad: (0, 0, 0))
+			ParsecClientSendMessage(_parsec, &keyboardMessagePress)
+		}
+		keyboardMessagePress.keyboard = ParsecKeyboardMessage(code: keyCode, mod: MOD_NONE, pressed: true, __pad: (0, 0, 0))
+		ParsecClientSendMessage(_parsec, &keyboardMessagePress)
+
+		// add release delay in case some games ignore instant key release
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+			var release = ParsecMessage()
+			release.type = MESSAGE_KEYBOARD
+			release.keyboard = ParsecKeyboardMessage(code: keyCode, mod: MOD_NONE, pressed: false, __pad: (0, 0, 0))
+			ParsecClientSendMessage(self._parsec, &release)
+			if sendShift {
+				release.keyboard = ParsecKeyboardMessage(code: KEY_LSHIFT, mod: MOD_NONE, pressed: false, __pad: (0, 0, 0))
+				ParsecClientSendMessage(self._parsec, &release)
+			}
+		}
+	}
+
+	func sendVirtualKeyboardInput(text: String, isOn: Bool) {
+		let (keyCode, _) = getKeyCodeByText(text: text)
+
+		guard let keyCode else {
+			return
+		}
+
+		if keyCode.rawValue == 225 {
+			isVirtualShiftOn = isOn
+		}
+
+		var keyboardMessagePress = ParsecMessage()
+		keyboardMessagePress.type = MESSAGE_KEYBOARD
+		keyboardMessagePress.keyboard.pressed = isOn
+		keyboardMessagePress.keyboard.code = keyCode
+		ParsecClientSendMessage(_parsec, &keyboardMessagePress)
+
+	}
+
+	func sendKeyboardMessage(event: KeyBoardKeyEvent) {
+		if event.input == nil {
+			return
+		}
+
+		var keyboardMessagePress = ParsecMessage()
+		keyboardMessagePress.type = MESSAGE_KEYBOARD
+		keyboardMessagePress.keyboard.code = ParsecKeycode(UInt32(KeyCodeTranslators.uiKeyCodeToInt(key: event.input?.keyCode ?? UIKeyboardHIDUsage.keyboardErrorUndefined)))
+		keyboardMessagePress.keyboard.pressed = event.isPressBegin
+		capsLock = event.input?.modifierFlags.contains(.alphaShift) == true
+		keyboardMessagePress.keyboard.mod = capsLock ? MOD_CAPS : MOD_NONE
+		ParsecClientSendMessage(_parsec, &keyboardMessagePress)
+	}
+
+	func sendKeyboardMessage(keyCode: UInt32, pressed: Bool)
+	{
+		var keyboardMessagePress = ParsecMessage()
+		keyboardMessagePress.type = MESSAGE_KEYBOARD
+		keyboardMessagePress.keyboard.code = ParsecKeycode(keyCode)
+		keyboardMessagePress.keyboard.pressed = pressed
+		keyboardMessagePress.keyboard.mod = capsLock ? MOD_CAPS : MOD_NONE
+		ParsecClientSendMessage(_parsec, &keyboardMessagePress)
+	}
+	
+	func sendGameControllerButtonMessage(controllerId: UInt32, _ button:ParsecGamepadButton, pressed: Bool)
+	{
+		var pmsg = ParsecMessage()
+		pmsg.type = MESSAGE_GAMEPAD_BUTTON
+		pmsg.gamepadButton.id = controllerId
+		pmsg.gamepadButton.button = button
+		pmsg.gamepadButton.pressed = pressed
+		ParsecClientSendMessage(_parsec, &pmsg)
+	}
+
+	func sendGameControllerAxisMessage(controllerId: UInt32, _ button: ParsecGamepadAxis, _ value: Int16) {
+	    var pmsg = ParsecMessage()
+		pmsg.type = MESSAGE_GAMEPAD_AXIS
+		pmsg.gamepadAxis.id = controllerId
+		pmsg.gamepadAxis.axis = button
+		pmsg.gamepadAxis.value = value
+		ParsecClientSendMessage(_parsec, &pmsg)
+	}
+
+	func sendGameControllerUnplugMessage(controllerId: UInt32) {
+	    var pmsg = ParsecMessage()
+		pmsg.type = MESSAGE_GAMEPAD_UNPLUG
+		pmsg.gamepadUnplug.id = controllerId
+		ParsecClientSendMessage(_parsec, &pmsg)
+	}
+
+	func sendWheelMsg(x: Int32, y: Int32) {
+		var pmsg = ParsecMessage()
+		pmsg.type = MESSAGE_MOUSE_WHEEL
+		pmsg.mouseWheel.x = x
+		pmsg.mouseWheel.y = y
+		ParsecClientSendMessage(_parsec, &pmsg)
+	}
+
+	func startBackgroundTask() {
+
+		pollGeneration += 1
+		let generation = pollGeneration
+
+		let audio = DispatchWorkItem { [weak self] in
+			while let self = self, self.pollGeneration == generation {
+				if self.pollAudio() == PARSEC_NOT_RUNNING {
+					usleep(50_000)
+				}
+			}
+		}
+
+		let event = DispatchWorkItem { [weak self] in
+			var sawCursor = false
+			while let self = self, self.pollGeneration == generation {
+				if self.pollEvent(sawCursor: &sawCursor) {
+					usleep(50_000)
+				}
+			}
+		}
+
+		DispatchQueue(label: "parsec.poll.audio", qos: .utility).async(execute: audio)
+		DispatchQueue(label: "parsec.poll.event", qos: .utility).async(execute: event)
+	}
+
+	func sendUserData(type: ParsecUserDataType, message: Data) {
+        var nullTerminatedMessage = message
+        nullTerminatedMessage.append(0)
+		nullTerminatedMessage.withUnsafeBytes { ptr in
+			let ptr2 = ptr.baseAddress?.assumingMemoryBound(to: CChar.self)
+			ParsecClientSendUserData(_parsec, type.rawValue, ptr2)
+		}
+	}
+
+	func updateHostVideoConfig() {
+		var videoConfig = ParsecUserDataVideoConfig()
+		videoConfig.video[0].resolutionX = StreamSessionState.shared.resolutionX
+		videoConfig.video[0].resolutionY = StreamSessionState.shared.resolutionY
+		videoConfig.video[0].encoderMaxBitrate = StreamSessionState.shared.bitrate
+		videoConfig.video[0].fullFPS = StreamSessionState.shared.constantFps
+		videoConfig.video[0].output = StreamSessionState.shared.output
+		let encoder = JSONEncoder()
+		let data = try! encoder.encode(videoConfig)
+		CParsec.sendUserData(type: .setVideoConfig, message: data)
+	}
+}
