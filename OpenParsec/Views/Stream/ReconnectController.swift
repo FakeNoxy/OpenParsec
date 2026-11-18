@@ -11,7 +11,11 @@ import AVFoundation
 /// the previous `onNextFrame` closure behavior), and keeping this a plain
 /// class preserves the exact synchronous timing of the old code.
 final class ReconnectController: ObservableObject {
-	@Published var metricInfo: String = "Loading..."
+	/// Live metric string, isolated on its own `ObservableObject` so the 2×/s
+	/// poll writes invalidate only `ParsecStatusBar` (which observes it), never
+	/// `ParsecView` (which holds this controller as a `@StateObject` and whose
+	/// body re-presentation resets the Resolution/Bitrate `Menu` scroll).
+	let metrics = MetricsModel()
 	@Published var showDCAlert: Bool = false
 	@Published var DCAlertText: String = "Disconnected (reason unknown)"
 	@Published var isReconnecting: Bool = false
@@ -141,7 +145,7 @@ final class ReconnectController: ObservableObject {
 			if networkFailureSince == nil { networkFailureSince = Date() }
 			let lost = Date().timeIntervalSince(networkFailureSince!)
 			let justResumed = Date().timeIntervalSince(ParsecBackgroundManager.shared.resumedAt ?? .distantPast) < 10
-			connectionLost = true
+			if !connectionLost { connectionLost = true }
 			if lost >= 3 || justResumed {
 				networkFailureSince = nil
 				connectionLost = false
@@ -151,7 +155,11 @@ final class ReconnectController: ObservableObject {
 			}
 		} else {
 			networkFailureSince = nil
-			connectionLost = false
+			// Guarded: this `else` runs on EVERY healthy poll (2×/s). An
+			// unguarded `@Published` write fires `objectWillChange` even when
+			// the value is unchanged, re-evaluating `ParsecView` (which reads
+			// `connectionLost` in its body) and resetting the Menu pickers.
+			if connectionLost { connectionLost = false }
 		}
 
 		if status != PARSEC_OK {
@@ -259,7 +267,10 @@ final class ReconnectController: ObservableObject {
 
 		if showMenu || SettingsStore.shared.alwaysShowStatus {
 			let str = String.fromBuffer(&pcs.decoder.0.name.0, length: 16)
-			metricInfo = "Decode \(String(format: "%.2f", pcs.`self`.metrics.0.decodeLatency))ms    Encode \(String(format: "%.2f", pcs.`self`.metrics.0.encodeLatency))ms    Network \(String(format: "%.2f", pcs.`self`.metrics.0.networkLatency))ms    Bitrate \(String(format: "%.2f", pcs.`self`.metrics.0.bitrate))Mbps    RTx \(pcs.`self`.metrics.0.fastRTs + pcs.`self`.metrics.0.slowRTs)    Queue \(pcs.`self`.metrics.0.queuedFrames)    Draw \(String(format: "%.0f", CParsec.drawRate))fps \(CParsec.rendererName)    \(pcs.decoder.0.h265 ? "H265" : "H264") \(pcs.decoder.0.width)x\(pcs.decoder.0.height) \(pcs.decoder.0.color444 ? "4:4:4" : "4:2:0") \(str)"
+			let info = "Decode \(String(format: "%.2f", pcs.`self`.metrics.0.decodeLatency))ms    Encode \(String(format: "%.2f", pcs.`self`.metrics.0.encodeLatency))ms    Network \(String(format: "%.2f", pcs.`self`.metrics.0.networkLatency))ms    Bitrate \(String(format: "%.2f", pcs.`self`.metrics.0.bitrate))Mbps    RTx \(pcs.`self`.metrics.0.fastRTs + pcs.`self`.metrics.0.slowRTs)    Queue \(pcs.`self`.metrics.0.queuedFrames)    Draw \(String(format: "%.0f", CParsec.drawRate))fps \(CParsec.rendererName)    \(pcs.decoder.0.h265 ? "H265" : "H264") \(pcs.decoder.0.width)x\(pcs.decoder.0.height) \(pcs.decoder.0.color444 ? "4:4:4" : "4:2:0") \(str)"
+			if info != metrics.info {
+				metrics.info = info
+			}
 		}
 	}
 

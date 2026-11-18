@@ -11,6 +11,12 @@ struct StreamMenuPanel: View {
 	let zoomEnabled: Bool
 	let resolutions: [ParsecResolution]
 	let bitrates: [Int]
+	let currentResolutionX: Int
+	let currentResolutionY: Int
+	let currentBitrate: Int
+	let displayConfigs: [ParsecDisplayConfig]
+	let constantFps: Bool
+	let cursorMode: CursorMode
 
 	let onDisableOverlay: () -> Void
 	let onToggleMute: () -> Void
@@ -22,9 +28,6 @@ struct StreamMenuPanel: View {
 	let onToggleTouchMode: () -> Void
 	let onOpenSettings: () -> Void
 	let onDisconnect: () -> Void
-
-	@ObservedObject private var dataModel = StreamSessionState.shared
-	@ObservedObject private var settingsStore = SettingsStore.shared
 
 	var body: some View {
 		VStack(spacing: 3) {
@@ -47,7 +50,7 @@ struct StreamMenuPanel: View {
 							Button(action: {
 								onChangeResolution(resolution)
 							}) {
-								if resolution.width == dataModel.resolutionX && resolution.height == dataModel.resolutionY {
+								if resolution.width == currentResolutionX && resolution.height == currentResolutionY {
 									Label(resolution.desc, systemImage: "checkmark")
 								} else {
 									Text(resolution.desc)
@@ -64,7 +67,7 @@ struct StreamMenuPanel: View {
 						Button(action: {
 							onChangeBitRate(0)
 						}) {
-							if settingsStore.bitrate == 0 {
+							if currentBitrate == 0 {
 								Label("Host Default", systemImage: "checkmark")
 							} else {
 								Text("Host Default")
@@ -74,7 +77,7 @@ struct StreamMenuPanel: View {
 							Button(action: {
 								onChangeBitRate(bitrate)
 							}) {
-								if bitrate == settingsStore.bitrate {
+								if bitrate == currentBitrate {
 									Label("\(bitrate) Mbps", systemImage: "checkmark")
 								} else {
 									Text("\(bitrate) Mbps")
@@ -87,12 +90,12 @@ struct StreamMenuPanel: View {
 							.frame(maxWidth: .infinity)
 							.multilineTextAlignment(.center)
 					}
-					if dataModel.displayConfigs.count > 1 {
+					if displayConfigs.count > 1 {
 						Menu {
 							Button("Auto") {
 								onChangeDisplay("none")
 							}
-							ForEach(dataModel.displayConfigs, id: \.self) { config in
+							ForEach(displayConfigs, id: \.self) { config in
 								Button("\(config.name) \(config.adapterName)") {
 									onChangeDisplay(config.id)
 								}
@@ -106,7 +109,7 @@ struct StreamMenuPanel: View {
 					}
 
 					Button(action: onToggleConstantFps) {
-						Text("Constant Frame Rate: \(dataModel.constantFps ? "ON" : "OFF")")
+						Text("Constant Frame Rate: \(constantFps ? "ON" : "OFF")")
 							.padding(8)
 							.frame(maxWidth: .infinity)
 							.multilineTextAlignment(.center)
@@ -118,7 +121,7 @@ struct StreamMenuPanel: View {
 							.multilineTextAlignment(.center)
 					}
 					Button(action: onToggleTouchMode) {
-						Text("Touch Mode: \(settingsStore.cursorMode == .direct ? "Direct" : "Touchpad")")
+						Text("Touch Mode: \(cursorMode == .direct ? "Direct" : "Touchpad")")
 							.padding(8)
 							.frame(maxWidth: .infinity)
 							.multilineTextAlignment(.center)

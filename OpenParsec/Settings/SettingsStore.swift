@@ -45,6 +45,9 @@ final class SettingsStore: ObservableObject {
 	}
 
 	private func store(_ value: Any, _ key: String) {
+		if let current = defaults.object(forKey: key), (current as? NSObject)?.isEqual(value) == true {
+			return
+		}
 		objectWillChange.send()
 		defaults.set(value, forKey: key)
 	}

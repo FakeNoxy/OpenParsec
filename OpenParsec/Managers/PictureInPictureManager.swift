@@ -483,8 +483,12 @@ class PictureInPictureManager: NSObject {
 		onRestoreUserInterface = nil
 
 		// Deactivate the audio session so iOS stops keeping the app alive
-		// for audio playback in the background
-		try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+		// for audio playback in the background.
+		// setActive(_:) is a synchronous call that can block the main thread
+		// (it may wait on other apps' audio session state), so run it off-main.
+		DispatchQueue.global(qos: .userInitiated).async {
+			try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+		}
 	}
 }
 

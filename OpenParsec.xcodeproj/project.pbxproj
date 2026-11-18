@@ -84,6 +84,7 @@
 		914FE32F30ADF562000081AC /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FE2AA30ADF562000081AC /* SessionStore.swift */; };
 		914FE33030ADF562000081AC /* ParsecMetalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FE2D030ADF562000081AC /* ParsecMetalViewController.swift */; };
 		914FE33130ADF562000081AC /* RenderLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FE2B530ADF562000081AC /* RenderLoop.swift */; };
+		914FE36F30AE09DD000081AC /* MetricsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FE36E30AE09DD000081AC /* MetricsModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -192,6 +193,7 @@
 		914FE2E730ADF562000081AC /* ReconnectController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReconnectController.swift; sourceTree = "<group>"; };
 		914FE2E830ADF562000081AC /* StreamMenuPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamMenuPanel.swift; sourceTree = "<group>"; };
 		914FE34130ADF7F4000081AC /* OpenParsecTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenParsecTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		914FE36E30AE09DD000081AC /* MetricsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricsModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -501,6 +503,7 @@
 		914FE2E930ADF562000081AC /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				914FE36E30AE09DD000081AC /* MetricsModel.swift */,
 				914FE2E330ADF562000081AC /* ParsecSession.swift */,
 				914FE2E430ADF562000081AC /* ParsecStatusBar.swift */,
 				914FE2E530ADF562000081AC /* ParsecView.swift */,
@@ -700,6 +703,7 @@
 				914FE31530ADF562000081AC /* ParsecKeyboardScrolling.swift in Sources */,
 				914FE31630ADF562000081AC /* FriendInfo.swift in Sources */,
 				914FE31730ADF562000081AC /* TextKeycodeResolver.swift in Sources */,
+				914FE36F30AE09DD000081AC /* MetricsModel.swift in Sources */,
 				914FE31830ADF562000081AC /* ParsecVirtualKeyboard.swift in Sources */,
 				914FE31930ADF562000081AC /* ParsecTypes.swift in Sources */,
 				914FE31A30ADF562000081AC /* ParsecGLKRenderer.swift in Sources */,

@@ -46,7 +46,7 @@ final class ReconnectControllerTests: XCTestCase {
 	// MARK: - Initial state
 
 	func testInitialState() {
-		XCTAssertEqual(controller.metricInfo, "Loading...")
+		XCTAssertEqual(controller.metrics.info, "Loading...")
 		XCTAssertFalse(controller.showDCAlert)
 		XCTAssertEqual(controller.DCAlertText, "Disconnected (reason unknown)")
 		XCTAssertFalse(controller.isReconnecting)
