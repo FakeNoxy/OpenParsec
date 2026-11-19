@@ -19,40 +19,16 @@ struct SettingsView: View {
 		ZStack {
 			if visible {
 				// Background
-				Rectangle()
-					.fill(Color.init(red: 0, green: 0, blue: 0, opacity: 0.67))
+				Color.black.opacity(0.67)
 					.edgesIgnoringSafeArea(.all)
 			}
 		}
 
 		ZStack {
 			if visible {
-				// Main controls
-				VStack {
-					// Navigation controls
-					ZStack {
-						Rectangle()
-							.fill(Color("BackgroundTab"))
-							.frame(height: 52)
-							.shadow(color: Color("Shading"), radius: 4, y: 6)
-						ZStack {
-							HStack {
-								Button(action: saveAndExit, label: { Image(systemName: "xmark").scaleEffect(x: -1) })
-								 .padding()
-								Spacer()
-							}
-							Text("Settings")
-								.multilineTextAlignment(.center)
-								.foregroundColor(Color("Foreground"))
-								.font(.system(size: 20, weight: .medium))
-							Spacer()
-						}
-						.foregroundColor(Color("AccentColor"))
-					}
-					.zIndex(1)
-
+				NavigationStack {
 					ScrollView {
-						VStack {
+						VStack(alignment: .leading, spacing: AppSpacing.wide) {
 							CatTitle("Touch & Mouse")
 							CatList {
 								CatItem("Touch Mode") {
@@ -178,19 +154,32 @@ struct SettingsView: View {
 								}
 							}
 							Text(getVersionInfo())
+								.font(.footnote)
 								.multilineTextAlignment(.center)
 								.opacity(0.5)
-								.padding()
+								.frame(maxWidth: .infinity)
+								.padding(.vertical, AppSpacing.regular)
+						}
+						.padding()
+					}
+					.foregroundColor(Color("Foreground"))
+					.navigationTitle("Settings")
+					.navigationBarTitleDisplayMode(.inline)
+					.toolbar {
+						ToolbarItem(placement: .topBarLeading) {
+							Button(action: saveAndExit, label: {
+								Image(systemName: "xmark").scaleEffect(x: -1)
+							})
+							.foregroundColor(Color("AccentColor"))
 						}
 					}
-                    .foregroundColor(Color("Foreground"))
 				}
-				.background(Rectangle().fill(Color("BackgroundGray")))
-				.cornerRadius(8)
+				.background(Color("BackgroundGray"))
+				.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
 				.padding()
 			}
 		}
-        .preferredColorScheme(appScheme)
+		.preferredColorScheme(appScheme)
 		.scaleEffect(visible ? 1 : 0, anchor: .zero)
 	}
 

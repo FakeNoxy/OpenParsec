@@ -16,12 +16,11 @@ struct LoginView: View {
 	var body: some View {
 		ZStack {
 			// Background
-			Rectangle()
-				.fill(Color("BackgroundGray"))
+			Color("BackgroundGray")
 				.edgesIgnoringSafeArea(.all)
 
-			// Login controls
-			VStack(spacing: 8) {
+			// Login card
+			VStack(spacing: AppSpacing.regular) {
 				HStack(spacing: 2) {
 					Image("IconTransparent")
 						.resizable()
@@ -32,88 +31,84 @@ struct LoginView: View {
 						.padding([.top, .bottom, .trailing])
 				}
 				.frame(height: 80)
+				.padding(.top, AppSpacing.wide)
+
 				TextField("Email", text: $inputEmail)
-					.padding()
-					.background(Rectangle().fill(Color("BackgroundField")))
-					.cornerRadius(8)
+					.padding(AppSpacing.regular)
+					.background(
+						RoundedRectangle(cornerRadius: AppRadius.field, style: .continuous)
+							.fill(Color("BackgroundField"))
+					)
 					.disableAutocorrection(true)
-					.autocapitalization(/*@START_MENU_TOKEN@*/.none/*@END_MENU_TOKEN@*/)
+					.autocapitalization(.none)
 					.keyboardType(.emailAddress)
 					.textContentType(.emailAddress)
-				SecureField("Password", text: $inputPassword, onCommit: { authenticate() })
-					.padding()
-					.background(Rectangle().fill(Color("BackgroundField")))
-					.cornerRadius(8)
-					.disableAutocorrection(true)
-					.autocapitalization(/*@START_MENU_TOKEN@*/.none/*@END_MENU_TOKEN@*/)
-					.textContentType(.password)
-				Button(action: {authenticate()}) {
-					ZStack {
-						Rectangle()
-							.fill(Color("AccentColor"))
-							.cornerRadius(8)
-						Text("Login")
-							.foregroundColor(.white)
-					}
-					.frame(height: 54)
-				}
-			}
 
+				SecureField("Password", text: $inputPassword, onCommit: { authenticate() })
+					.padding(AppSpacing.regular)
+					.background(
+						RoundedRectangle(cornerRadius: AppRadius.field, style: .continuous)
+							.fill(Color("BackgroundField"))
+					)
+					.disableAutocorrection(true)
+					.autocapitalization(.none)
+					.textContentType(.password)
+
+				Button(action: { authenticate() }) {
+					Text("Login")
+						.font(.body.weight(.semibold))
+				}
+				.buttonStyle(PrimaryButtonStyle(fullWidth: true))
+				.padding(.top, AppSpacing.tight)
+			}
+			.padding(AppSpacing.wide)
+			.glassCard(cornerRadius: 20, fallbackFill: Color("BackgroundCard"))
+			.frame(maxWidth: 420)
 			.padding()
-			.frame(maxWidth: 400)
 			.disabled(viewModel.isLoading) // Disable when loading
 
-			// Loading elements
+			// Loading / 2FA overlay
 			if viewModel.isLoading || viewModel.presentTFAAlert {
 				ZStack {
-					Rectangle() // Darken background
-						.fill(Color.black)
-						.opacity(0.5)
+					Color.black.opacity(0.5)
 						.edgesIgnoringSafeArea(.all)
-					VStack {
+					VStack(spacing: AppSpacing.regular) {
 						if viewModel.isLoading {
 							ActivityIndicator(isAnimating: $viewModel.isLoading, style: .large, tint: .white)
-							 .padding()
-						 Text("Loading...")
-							 .multilineTextAlignment(.center)
+								.padding()
+							Text("Loading...")
+								.font(.body)
+								.multilineTextAlignment(.center)
 						} else if viewModel.presentTFAAlert {
 							Text("Please enter your 2FA code from your authenticator app")
+								.font(.subheadline)
 								.multilineTextAlignment(.center)
 							SecureField("2FA Code", text: $inputTFA)
-								.padding()
-								.background(Rectangle().fill(Color("BackgroundField")))
+								.padding(AppSpacing.regular)
+								.background(
+									RoundedRectangle(cornerRadius: AppRadius.field, style: .continuous)
+										.fill(Color("BackgroundField"))
+								)
 								.foregroundColor(Color("Foreground"))
-								.cornerRadius(8)
 								.disableAutocorrection(true)
-								.autocapitalization(/*@START_MENU_TOKEN@*/.none/*@END_MENU_TOKEN@*/)
+								.autocapitalization(.none)
 								.textContentType(.oneTimeCode)
-							HStack {
-								Button(action: {viewModel.presentTFAAlert = false}) {
-									ZStack {
-										Rectangle()
-											.fill(Color("BackgroundButton"))
-											.cornerRadius(8)
-										Text("Cancel")
-											.foregroundColor(Color("Foreground"))
-									}
-									.frame(height: 54)
+							HStack(spacing: AppSpacing.tight) {
+								Button(action: { viewModel.presentTFAAlert = false }) {
+									Text("Cancel")
+										.font(.body.weight(.medium))
 								}
-								Button(action: {authenticate(inputTFA)}) {
-									ZStack {
-										Rectangle()
-											.fill(Color("AccentColor"))
-											.cornerRadius(8)
-										Text("Enter")
-											.foregroundColor(.white)
-									}
-									.frame(height: 54)
+								.buttonStyle(SubtleButtonStyle())
+								Button(action: { authenticate(inputTFA) }) {
+									Text("Enter")
+										.font(.body.weight(.semibold))
 								}
+								.buttonStyle(PrimaryButtonStyle(fullWidth: true))
 							}
 						}
 					}
-					.padding()
-					.background(Rectangle().fill(Color("BackgroundPrompt")))
-					.cornerRadius(8)
+					.padding(AppSpacing.wide)
+					.glassCard(cornerRadius: 20, fallbackFill: Color("BackgroundPrompt"))
 					.padding()
 				}
 			}

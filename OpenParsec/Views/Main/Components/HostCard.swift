@@ -1,66 +1,63 @@
 import SwiftUI
 
-/// A single host row in the Hosts page, extracted verbatim from `MainView`.
+/// A single host card in the Hosts page.
 struct HostCard: View {
 	let host: IdentifiableHostInfo
 	let onConnect: () -> Void
 
 	var body: some View {
-		ZStack {
-			VStack {
-				URLImage(url: URL(string: "https://parsecusercontent.com/cors-resize-image/w=64,h=64,fit=crop,background=white,q=90,f=jpeg/avatars/\(String(host.user.id))/avatar"),
-						output:
-						{
-							$0
-								.resizable()
-								.aspectRatio(contentMode: .fit)
-								.frame(width: 64, height: 64)
-								.cornerRadius(8)
-						},
-						placeholder:
-						{
-							Image("IconTransparent")
-								.resizable()
-								.aspectRatio(contentMode: .fit)
-								.frame(width: 64, height: 64)
-								.background(Rectangle().fill(Color("BackgroundPrompt")))
-								.cornerRadius(8)
-						})
+		VStack(spacing: AppSpacing.regular) {
+			URLImage(url: URL(string: "https://parsecusercontent.com/cors-resize-image/w=64,h=64,fit=crop,background=white,q=90,f=jpeg/avatars/\(String(host.user.id))/avatar"),
+					output:
+					{
+						$0
+							.resizable()
+							.aspectRatio(contentMode: .fit)
+							.frame(width: 64, height: 64)
+							.clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+					},
+					placeholder:
+					{
+						Image("IconTransparent")
+							.resizable()
+							.aspectRatio(contentMode: .fit)
+							.frame(width: 64, height: 64)
+							.background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color("BackgroundPrompt")))
+					})
+
+			VStack(spacing: 2) {
 				Text(host.hostname)
-					.font(.system(size: 20, weight: .medium))
+					.font(.title3.weight(.medium))
 					.multilineTextAlignment(.center)
+					.lineLimit(2)
 				Text("\(host.user.name)#\(String(host.user.id))")
-					.font(.system(size: 16, weight: .medium))
+					.font(.subheadline)
 					.multilineTextAlignment(.center)
 					.opacity(0.5)
-				Button(action: onConnect) {
-					Text("Connect")
-						.lineLimit(1)
-						.fixedSize()
-						.foregroundColor(.white)
-						.padding(.horizontal, 28)
-						.frame(minHeight: 44)
-						.background(Color("AccentColor"))
-						.cornerRadius(8)
-				}
 			}
 
+			Button(action: onConnect) {
+				Text("Connect")
+			}
+			.buttonStyle(PrimaryButtonStyle(fullWidth: true))
+		}
+		.padding(AppSpacing.regular)
+		.overlay(alignment: .topTrailing) {
 			if host.connections > 0 {
-				VStack {
-					HStack {
-						Image(systemName: "person.fill")
-						Text(String(host.connections))
-							.font(.system(size: 16, weight: .medium))
-						Spacer()
-					}
-					Spacer()
+				HStack(spacing: 4) {
+					Image(systemName: "person.fill")
+						.font(.caption)
+					Text(String(host.connections))
+						.font(.caption.weight(.medium))
 				}
+				.padding(.horizontal, 10)
+				.padding(.vertical, 6)
+				.background(Capsule().fill(Color.white.opacity(0.12)))
+				.padding(10)
+				.foregroundColor(Color("Foreground"))
 			}
 		}
-		.padding()
-		.frame(maxWidth: 400)
-		.background(Rectangle().fill(Color("BackgroundCard")))
-		.cornerRadius(8)
+		.glassCard(fallbackFill: Color("BackgroundCard"))
 		.contextMenu {
 			Button(action: { UIPasteboard.general.string = host.hostname }) {
 				Label("Copy Name", systemImage: "doc.on.doc")

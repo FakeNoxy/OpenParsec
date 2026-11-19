@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The "Last connected" card in the Hosts page, extracted verbatim from `MainView`.
+/// The "Last connected" hero card at the top of the Hosts page.
 struct LastHostCard: View {
 	let hostname: String
 	let onReconnect: () -> Void
@@ -8,25 +8,16 @@ struct LastHostCard: View {
 
 	var body: some View {
 		VStack(spacing: 0) {
-			HStack {
+			HStack(spacing: AppSpacing.regular) {
 				VStack(alignment: .leading, spacing: 4) {
-					Text("Last connected")
-						.font(.system(size: 12))
-						.opacity(0.5)
+					Label("Last connected", systemImage: "clock.arrow.circlepath")
+						.font(.footnote)
+						.opacity(0.6)
 					Text(hostname)
-						.font(.system(size: 16, weight: .medium))
+						.font(.title3.weight(.semibold))
+						.lineLimit(1)
 				}
 				Spacer()
-				Button(action: onReconnect) {
-					Text("Reconnect")
-						.lineLimit(1)
-						.fixedSize()
-						.foregroundColor(.white)
-						.padding(.horizontal, 16)
-						.frame(minHeight: 44)
-						.background(Color("AccentColor"))
-						.cornerRadius(8)
-				}
 				Button(action: onClear) {
 					Image(systemName: "xmark")
 						.foregroundColor(Color("Foreground"))
@@ -35,20 +26,26 @@ struct LastHostCard: View {
 						.contentShape(Rectangle())
 				}
 			}
-			.padding()
+			.padding(AppSpacing.regular)
+
+			Button(action: onReconnect) {
+				Text("Reconnect")
+			}
+			.buttonStyle(PrimaryButtonStyle(fullWidth: true))
+			.padding([.horizontal, .bottom], AppSpacing.regular)
+			.padding(.top, AppSpacing.tight)
+
 			HStack {
 				Toggle("Reconnect on app launch", isOn: Binding(
 					get: { SettingsStore.shared.autoConnectOnLaunch },
 					set: { SettingsStore.shared.autoConnectOnLaunch = $0 }
 				))
-				.font(.system(size: 13))
+				.font(.footnote)
 				.opacity(0.7)
 			}
-			.padding(.horizontal)
-			.padding(.bottom, 10)
+			.padding(.horizontal, AppSpacing.regular)
+			.padding(.bottom, AppSpacing.regular)
 		}
-		.frame(maxWidth: 400)
-		.background(Rectangle().fill(Color("BackgroundCard")))
-		.cornerRadius(8)
+		.glassCard(fallbackFill: Color("BackgroundCard"))
 	}
 }

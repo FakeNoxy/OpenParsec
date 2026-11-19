@@ -1,5 +1,115 @@
 import SwiftUI
 
+// MARK: - Design Tokens
+
+enum AppRadius {
+	static let card: CGFloat = 16
+	static let control: CGFloat = 10
+	static let field: CGFloat = 12
+}
+
+enum AppSpacing {
+	static let tight: CGFloat = 8
+	static let regular: CGFloat = 12
+	static let relaxed: CGFloat = 16
+	static let wide: CGFloat = 24
+}
+
+// MARK: - Glass Card (iOS 26 Liquid Glass with iOS 17 fallback)
+
+struct GlassCardModifier: ViewModifier {
+	var cornerRadius: CGFloat = AppRadius.card
+	var fallbackFill: Color = Color("BackgroundCard")
+
+	func body(content: Content) -> some View {
+		if #available(iOS 26.0, *) {
+			content
+				.glassEffect(.regular, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+		} else {
+			content
+				.background(
+					RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+						.fill(fallbackFill)
+						.overlay(
+							RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+								.strokeBorder(Color.white.opacity(0.06), lineWidth: 1)
+						)
+				)
+		}
+	}
+}
+
+extension View {
+	func glassCard(cornerRadius: CGFloat = AppRadius.card, fallbackFill: Color = Color("BackgroundCard")) -> some View {
+		modifier(GlassCardModifier(cornerRadius: cornerRadius, fallbackFill: fallbackFill))
+	}
+}
+
+// MARK: - Button Styles
+
+struct PrimaryButtonStyle: ButtonStyle {
+	var fullWidth: Bool = false
+	@Environment(\.isEnabled) private var isEnabled
+
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.font(.body.weight(.semibold))
+			.foregroundColor(.white)
+			.padding(.horizontal, fullWidth ? 0 : 20)
+			.frame(minHeight: 44)
+			.frame(maxWidth: fullWidth ? .infinity : nil)
+			.background(
+				RoundedRectangle(cornerRadius: AppRadius.control, style: .continuous)
+					.fill(Color("AccentColor"))
+					.opacity(configuration.isPressed ? 0.8 : 1)
+			)
+			.opacity(isEnabled ? 1 : 0.4)
+	}
+}
+
+struct SubtleButtonStyle: ButtonStyle {
+	@Environment(\.isEnabled) private var isEnabled
+
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.font(.body.weight(.medium))
+			.padding(.horizontal, 14)
+			.padding(.vertical, 8)
+			.background(
+				RoundedRectangle(cornerRadius: AppRadius.control, style: .continuous)
+					.fill(Color.white.opacity(configuration.isPressed ? 0.22 : 0.12))
+			)
+			.opacity(isEnabled ? 1 : 0.4)
+	}
+}
+
+// MARK: - Banner
+
+struct BannerView: View {
+	let message: String
+	var actionTitle: String?
+	let action: () -> Void
+
+	var body: some View {
+		HStack {
+			Text(message)
+				.font(.subheadline)
+				.lineLimit(2)
+			Spacer()
+			if let actionTitle {
+				Button(actionTitle, action: action)
+					.font(.subheadline.weight(.semibold))
+					.foregroundColor(Color("AccentColor"))
+					.frame(minHeight: 44)
+					.contentShape(Rectangle())
+			}
+		}
+		.padding(.horizontal, AppSpacing.regular)
+		.padding(.vertical, AppSpacing.tight)
+		.glassCard(cornerRadius: AppRadius.control, fallbackFill: Color("BackgroundPrompt"))
+	}
+}
+
 /**
  * Category Title
  *
@@ -15,10 +125,12 @@ struct CatTitle: View {
 	var body: some View {
 		HStack {
 			Text(text)
+				.font(.subheadline.weight(.semibold))
+				.opacity(0.7)
 			Spacer()
 		}
-		.padding(.horizontal)
-		.padding(.vertical, 4)
+		.padding(.horizontal, AppSpacing.regular)
+		.padding(.vertical, AppSpacing.tight)
 	}
 }
 
@@ -36,9 +148,9 @@ struct CatList<Content: View>: View {
 	}
 
 	var body: some View {
-		VStack(content: content)
-			.padding(.vertical, 10)
-			.background(Rectangle().fill(Color("BackgroundTab")).cornerRadius(10))
+		VStack(spacing: 0, content: content)
+			.padding(.vertical, AppSpacing.tight)
+			.glassCard(cornerRadius: 14, fallbackFill: Color("BackgroundTab"))
 			.padding(.horizontal)
 	}
 }
@@ -61,11 +173,13 @@ struct CatItem<Content: View>: View {
 	var body: some View {
 		HStack {
 			Text(title)
+				.font(.body)
 				.lineLimit(1)
 			Spacer()
 			content()
 		}
-		.padding(.horizontal)
+		.padding(.horizontal, AppSpacing.regular)
+		.padding(.vertical, 10)
 	}
 }
 
@@ -83,16 +197,21 @@ struct CatSlider: View {
 	}
 
 	var body: some View {
-		VStack(spacing: 4) {
+		VStack(spacing: 6) {
 			HStack {
 				Text(title)
+					.font(.body)
 					.lineLimit(1)
 				Spacer()
 				Text(String(format: "%.1f", value.wrappedValue))
+					.font(.subheadline)
+					.monospacedDigit()
+					.opacity(0.6)
 			}
 			Slider(value: value, in: range, step: step)
 		}
-		.padding(.horizontal)
+		.padding(.horizontal, AppSpacing.regular)
+		.padding(.vertical, 10)
 	}
 }
 

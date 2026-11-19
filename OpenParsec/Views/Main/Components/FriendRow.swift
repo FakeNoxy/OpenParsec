@@ -1,40 +1,34 @@
 import SwiftUI
 
-/// A single friend row in the Friends page, extracted verbatim from `MainView`.
+/// A single friend row in the Friends page.
 struct FriendRow: View {
 	let friend: IdentifiableUserInfo
 
 	var body: some View {
-		HStack {
+		HStack(spacing: AppSpacing.regular) {
 			URLImage(url: URL(string: "https://parsecusercontent.com/cors-resize-image/w=48,h=48,fit=crop,background=white,q=90,f=jpeg/avatars/\(String(friend.id))/avatar"),
 				output:
 				{
 					$0
 						.resizable()
 						.aspectRatio(contentMode: .fit)
-						.frame(width: 48, height: 48)
-						.cornerRadius(6)
+						.frame(width: 44, height: 44)
+						.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 				},
 				placeholder:
 				{
 					Image("IconTransparent")
 						.resizable()
 						.aspectRatio(contentMode: .fit)
-						.frame(width: 48, height: 48)
-						.background(Rectangle().fill(Color("BackgroundPrompt")))
-						.cornerRadius(6)
+						.frame(width: 44, height: 44)
+						.background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("BackgroundPrompt")))
 				})
 			Text("\(friend.username)#\(String(friend.id))")
-				.font(.system(size: 16, weight: .medium))
-				.multilineTextAlignment(.center)
+				.font(.body.weight(.medium))
+				.multilineTextAlignment(.leading)
 			Spacer()
- //			Button(action:{ }, label:{ Image(systemName:"ellipsis.circle.fill") })
- //				.font(.system(size:20))
- //				.foregroundColor(Color("AccentColor"))
- //				.padding(8)
 		}
-		.padding(8)
-		.background(Color("BackgroundCard"))
-		.cornerRadius(12)
+		.padding(AppSpacing.regular)
+		.glassCard(cornerRadius: 14, fallbackFill: Color("BackgroundCard"))
 	}
 }
