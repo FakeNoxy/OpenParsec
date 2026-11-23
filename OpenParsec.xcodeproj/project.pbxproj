@@ -973,6 +973,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(inherited) $PROJECT_DIR/Frameworks";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -1003,12 +1004,13 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(inherited) $PROJECT_DIR/Frameworks";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenParsec.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OpenParsec";
 			};
 			name = Release;
 		};
-/* End XCBuildConfiguration section */
+	/* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		27E61A89292965FC00FF6563 /* Build configuration list for PBXProject "OpenParsec" */ = {

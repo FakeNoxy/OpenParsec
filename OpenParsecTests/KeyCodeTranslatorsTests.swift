@@ -13,14 +13,14 @@ final class KeyCodeTranslatorsTests: XCTestCase {
 	func testLettersMapToKeycodes() {
 		// KEY_A ... KEY_Z = 4 ... 29 (parsec.h)
 		for (i, c) in "ABCDEFGHIJKLMNOPQRSTUVWXYZ".enumerated() {
-			XCTAssertEqual(KeyCodeTranslators.parsecKeyCodeTranslator(String(c))?.rawValue, 4 + i, "letter \(c)")
+			XCTAssertEqual(KeyCodeTranslators.parsecKeyCodeTranslator(String(c))?.rawValue, Optional(UInt32(4 + i)), "letter \(c)")
 		}
 	}
 
 	func testDigitsMapToKeycodes() {
 		// KEY_1 ... KEY_0 = 30 ... 39 (parsec.h)
 		for (i, c) in "1234567890".enumerated() {
-			XCTAssertEqual(KeyCodeTranslators.parsecKeyCodeTranslator(String(c))?.rawValue, 30 + i, "digit \(c)")
+			XCTAssertEqual(KeyCodeTranslators.parsecKeyCodeTranslator(String(c))?.rawValue, Optional(UInt32(30 + i)), "digit \(c)")
 		}
 	}
 
