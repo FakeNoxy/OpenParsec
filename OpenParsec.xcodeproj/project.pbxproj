@@ -266,7 +266,6 @@
 				914FE2CA30ADF562000081AC /* Utilities */,
 				914FE2D630ADF562000081AC /* ViewControllers */,
 				914FE2EA30ADF562000081AC /* Views */,
-				A27110000000000000000002 /* ConnectionAttemptPolicy.swift */,
 				27E61A97292965FD00FF6563 /* Assets.xcassets */,
 				27899AC5292FE2A9001ACA33 /* audio.c */,
 				27899AC6292FE2A9001ACA33 /* audio.h */,
@@ -317,6 +316,7 @@
 		914FE29B30ADF562000081AC /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D42F8E000100000011 /* ClipboardSync.swift */,
 				914FE29730ADF562000081AC /* NetworkWatcher.swift */,
 				914FE29830ADF562000081AC /* ParsecBackgroundManager.swift */,
 				914FE29930ADF562000081AC /* PictureInPictureManager.swift */,
@@ -330,6 +330,7 @@
 			children = (
 				914FE29C30ADF562000081AC /* AppConstants.swift */,
 				914FE29D30ADF562000081AC /* CursorPositionHelper.swift */,
+				A27110000000000000000002 /* ConnectionAttemptPolicy.swift */,
 				914FE29E30ADF562000081AC /* ParsecResolution.swift */,
 				914FE29F30ADF562000081AC /* ParsecUserData.swift */,
 				914FE2A030ADF562000081AC /* StreamSessionState.swift */,
@@ -664,6 +665,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				27899AC7292FE2A9001ACA33 /* audio.c in Sources */,
+				A27110000000000000000001 /* ConnectionAttemptPolicy.swift in Sources */,
+				A1B2C3D42F8E000100000012 /* ClipboardSync.swift in Sources */,
 				914FE2EC30ADF562000081AC /* IdentifiableModels.swift in Sources */,
 				914FE2ED30ADF562000081AC /* StringExtensions.swift in Sources */,
 				914FE2EE30ADF562000081AC /* ReconnectController.swift in Sources */,
@@ -742,8 +745,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A27110000000000000000001 /* ConnectionAttemptPolicy.swift in Sources */,
-				A1B2C3D42F8E000100000012 /* ClipboardSync.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
