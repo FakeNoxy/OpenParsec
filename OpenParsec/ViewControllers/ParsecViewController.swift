@@ -389,6 +389,9 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 		if keyboardVisible {
 			becomeFirstResponder()
 		}
+		if SettingsStore.shared.clipboardSync {
+			ClipboardSync.shared.start()
+		}
 		// (Pinch-to-zoom is driven manually via touchOverlay; the scroll view's pinch stays off.)
 	}
 
@@ -396,6 +399,7 @@ class ParsecViewController: UIViewController, UIScrollViewDelegate, ParsecTouchI
 		super.viewWillDisappear(animated)
 		UIApplication.shared.isIdleTimerDisabled = false
 		stopMomentum()
+		ClipboardSync.shared.stop()
 		if let parent = parent {
 			parent.setChildForHomeIndicatorAutoHidden(nil)
 			parent.setChildViewControllerForPointerLock(nil)

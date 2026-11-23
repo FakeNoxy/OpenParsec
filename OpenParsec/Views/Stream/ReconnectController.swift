@@ -98,6 +98,7 @@ final class ReconnectController: ObservableObject {
 	}
 
 	func poll(showMenu: Bool) {
+		guard UIApplication.shared.applicationState != .inactive else { return }
 		if showDCAlert || ParsecBackgroundManager.shared.isPaused || ParsecBackgroundManager.shared.endedByUser {
 			return
 		}
@@ -237,7 +238,7 @@ final class ReconnectController: ObservableObject {
 				// silent: auto-reconnect spent its retries, dont nag with an alert
 				disconnect()
 			} else {
-				DCAlertText = status.readable()
+				DCAlertText = status.connectionMessage()
 				showDCAlert = true
 			}
 			return

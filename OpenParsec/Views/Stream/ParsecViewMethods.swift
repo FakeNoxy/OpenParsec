@@ -115,6 +115,7 @@ extension ParsecView {
 		hideKeyboardButton = !SettingsStore.shared.showKeyboardButton
 		parsecViewController.updateMenuEdgeSwipe(menuHidden: hideOverlay)
 		offerHint()
+		if SettingsStore.shared.clipboardSync { ClipboardSync.shared.start() } else { ClipboardSync.shared.stop() }
 
 		var hostConfigChanged = false
 		if SettingsStore.shared.resolution != resolutionAtOpen {

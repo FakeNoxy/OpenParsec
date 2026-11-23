@@ -28,6 +28,9 @@ final class MainViewModel: ObservableObject {
 	@Published var connectingToName = ""
 	@Published var approvalStartedAt: Date?
 	@Published var connectStartedAt = Date()
+	@Published var attemptPolicy = ConnectionAttemptPolicy()
+	@Published var approvalPolls = 0
+	@Published var showConnectionHelp = false
 
 	@Published var isRefreshing = false
 	@Published var refreshError: String?
@@ -179,6 +182,7 @@ final class MainViewModel: ObservableObject {
 					sessionExpired = true
 				} else if let info: ErrorInfo = try? JSONDecoder().decode(ErrorInfo.self, from: data) {
 					baseAlertText = "Error gathering user info: \(info.error)"
+					showConnectionHelp = false
 					showBaseAlert = true
 				}
 			} catch {
@@ -208,6 +212,7 @@ final class MainViewModel: ObservableObject {
 					sessionExpired = true
 				} else if let info: ErrorInfo = try? JSONDecoder().decode(ErrorInfo.self, from: data) {
 					baseAlertText = "Error gathering friends: \(info.error)"
+					showConnectionHelp = false
 					showBaseAlert = true
 				}
 			} catch {
@@ -217,6 +222,7 @@ final class MainViewModel: ObservableObject {
 	}
 
 	func connectTo(_ who: IdentifiableHostInfo, retried: Bool = false) {
+		showConnectionHelp = false
 		if NetworkWatcher.shared.noNetwork {
 			appNote("[connect] no network, not trying")
 			withAnimation {
@@ -253,8 +259,10 @@ final class MainViewModel: ObservableObject {
 
 		connectStartedAt = Date()
 		let status = CParsec.connect(who.id)
-		appNote("[connect] started, status \(status.rawValue)")
+		appNote("[connect] started, status \(status.rawValue), network \(NetworkWatcher.shared.interfaceDescription)")
 		connectPolls = 0
+		attemptPolicy = ConnectionAttemptPolicy()
+		approvalPolls = 0
 		approvalStartedAt = nil
 
 		// Polling status (1s cadence, same as the old Timer)
@@ -268,6 +276,7 @@ final class MainViewModel: ObservableObject {
 	}
 
 	func pollConnect(_ who: IdentifiableHostInfo) {
+		guard isConnecting, attemptPolicy.tick(isActive: UIApplication.shared.applicationState == .active) else { return }
 		let status = CParsec.getStatus()
 		connectPolls += 1
 
@@ -278,7 +287,16 @@ final class MainViewModel: ObservableObject {
 			return
 		}
 
-		if status == PARSEC_CONNECTING { return } // wait
+		if status == PARSEC_CONNECTING {
+			if attemptPolicy.timedOut { retryOrGiveUp(who) }
+			return
+		}
+
+		if ConnectionAttemptPolicy.shouldRetry(isPeerFailure: status.isPeerConnectionFailure, alreadyRetried: retryingConnect) {
+			appNote("[connect] retrying peer setup, code \(status.rawValue)")
+			retryOrGiveUp(who)
+			return
+		}
 
 		if status == CONNECT_WRN_APPROVAL {
 			if approvalStartedAt == nil {
@@ -288,10 +306,11 @@ final class MainViewModel: ObservableObject {
 					return
 				}
 			}
-			let started = approvalStartedAt ?? Date()
-			approvalStartedAt = started
+			approvalStartedAt = approvalStartedAt ?? Date()
+			approvalPolls += 1
+			attemptPolicy = ConnectionAttemptPolicy()
 			if !waitingForApproval { withAnimation { waitingForApproval = true } }
-			if Date().timeIntervalSince(started) < 60 { return }
+			if approvalPolls < 60 { return }
 		}
 
 		withAnimation {
@@ -306,7 +325,8 @@ final class MainViewModel: ObservableObject {
 			onConnected?()
 		} else {
 			CParsec.disconnect()
-			baseAlertText = status.readable(connecting: true)
+			baseAlertText = status.connectionMessage(connecting: true)
+			showConnectionHelp = status.isLocalNetworkFailure
 			showBaseAlert = true
 		}
 

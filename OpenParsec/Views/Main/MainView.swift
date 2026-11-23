@@ -90,7 +90,13 @@ struct MainView: View {
 				Alert(title: Text("Are you sure you want to logout?"), primaryButton: .destructive(Text("Logout"), action: viewModel.logout), secondaryButton: .cancel(Text("Cancel")))
 			}
 			.alert(isPresented: $viewModel.showBaseAlert) {
-				Alert(title: Text(viewModel.baseAlertText))
+				if viewModel.showConnectionHelp {
+					return Alert(title: Text("Connection failed"), message: Text(viewModel.baseAlertText),
+						primaryButton: .default(Text("Open App Settings"), action: {
+							if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+						}), secondaryButton: .cancel(Text("OK")))
+				}
+				return Alert(title: Text(viewModel.baseAlertText))
 			}
 			.onAppear(perform: viewModel.initView)
 			.onDisappear { ParsecBackgroundManager.shared.canShortcutReconnect = false }

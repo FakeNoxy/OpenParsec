@@ -19,7 +19,7 @@ final class LoginViewModel: ObservableObject {
 		if let data = KeychainService.load(key: AppConstants.sessionKeyChainKey) {
 			let decoder = JSONDecoder()
 
-			print("Retrieved data from keychain: \(data).\nTrying to restore session.")
+			appNote("[session] restoring saved session")
 			SessionStore.clinfo = try? decoder.decode(ClientInfo.self, from: data)
 			if SessionStore.clinfo != nil {
 				let status = SecItemUpdate([kSecClass as String: kSecClassGenericPassword, kSecAttrAccount as String: AppConstants.sessionKeyChainKey] as CFDictionary, [kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock] as CFDictionary)
@@ -75,8 +75,6 @@ final class LoginViewModel: ObservableObject {
 
 				let json = try? JSONSerialization.jsonObject(with: data, options: [])
 				if let dict = json as? [String: Any], let isTFARequired = dict["tfa_required"] as? Bool {
-					print("Code output:")
-					print(dict)
 					if isTFARequired {
 						presentTFAAlert = true
 					} else {

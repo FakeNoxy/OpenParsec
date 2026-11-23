@@ -29,6 +29,7 @@ final class SettingsStore: ObservableObject {
 			"alwaysShowStatus": false,
 			"enablePiP": false,
 			"startMuted": false,
+			"clipboardSync": false,
 			"autoReconnectEnabled": true,
 			"errorPrompts": false,
 			"showConnectionLog": true,
@@ -145,6 +146,11 @@ final class SettingsStore: ObservableObject {
 	var startMuted: Bool {
 		get { defaults.bool(forKey: "startMuted") }
 		set { store(newValue, "startMuted") }
+	}
+
+	var clipboardSync: Bool {
+		get { defaults.bool(forKey: "clipboardSync") }
+		set { store(newValue, "clipboardSync") }
 	}
 
 	var autoReconnect: Bool {

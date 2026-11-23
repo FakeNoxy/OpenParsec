@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A27110000000000000000001 /* ConnectionAttemptPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27110000000000000000002 /* ConnectionAttemptPolicy.swift */; };
+		A1B2C3D42F8E000100000012 /* ClipboardSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42F8E000100000011 /* ClipboardSync.swift */; };
 		27899AC7292FE2A9001ACA33 /* audio.c in Sources */ = {isa = PBXBuildFile; fileRef = 27899AC5292FE2A9001ACA33 /* audio.c */; };
 		27B8D571292DCA5B00A324AD /* ParsecSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B8D56F292DCA5800A324AD /* ParsecSDK.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		27B8D572292DCA5B00A324AD /* ParsecSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 27B8D56F292DCA5800A324AD /* ParsecSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -112,6 +114,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A27110000000000000000002 /* ConnectionAttemptPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionAttemptPolicy.swift; sourceTree = "<group>"; };
+		A1B2C3D42F8E000100000011 /* ClipboardSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardSync.swift; sourceTree = "<group>"; };
 		27899AC4292FE2A8001ACA33 /* OpenParsec-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OpenParsec-Bridging-Header.h"; sourceTree = "<group>"; };
 		27899AC5292FE2A9001ACA33 /* audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = audio.c; sourceTree = "<group>"; };
 		27899AC6292FE2A9001ACA33 /* audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio.h; sourceTree = "<group>"; };
@@ -262,6 +266,7 @@
 				914FE2CA30ADF562000081AC /* Utilities */,
 				914FE2D630ADF562000081AC /* ViewControllers */,
 				914FE2EA30ADF562000081AC /* Views */,
+				A27110000000000000000002 /* ConnectionAttemptPolicy.swift */,
 				27E61A97292965FD00FF6563 /* Assets.xcassets */,
 				27899AC5292FE2A9001ACA33 /* audio.c */,
 				27899AC6292FE2A9001ACA33 /* audio.h */,
@@ -737,6 +742,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A27110000000000000000001 /* ConnectionAttemptPolicy.swift in Sources */,
+				A1B2C3D42F8E000100000012 /* ClipboardSync.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
