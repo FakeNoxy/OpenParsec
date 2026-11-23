@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A27110000000000000000001 /* ConnectionAttemptPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27110000000000000000002 /* ConnectionAttemptPolicy.swift */; };
-		A1B2C3D42F8E000100000012 /* ClipboardSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42F8E000100000011 /* ClipboardSync.swift */; };
 		27899AC7292FE2A9001ACA33 /* audio.c in Sources */ = {isa = PBXBuildFile; fileRef = 27899AC5292FE2A9001ACA33 /* audio.c */; };
 		27B8D571292DCA5B00A324AD /* ParsecSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27B8D56F292DCA5800A324AD /* ParsecSDK.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		27B8D572292DCA5B00A324AD /* ParsecSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 27B8D56F292DCA5800A324AD /* ParsecSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -87,6 +85,8 @@
 		914FE33030ADF562000081AC /* ParsecMetalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FE2D030ADF562000081AC /* ParsecMetalViewController.swift */; };
 		914FE33130ADF562000081AC /* RenderLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FE2B530ADF562000081AC /* RenderLoop.swift */; };
 		914FE36F30AE09DD000081AC /* MetricsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914FE36E30AE09DD000081AC /* MetricsModel.swift */; };
+		A1B2C3D42F8E000100000012 /* ClipboardSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D42F8E000100000011 /* ClipboardSync.swift */; };
+		A27110000000000000000001 /* ConnectionAttemptPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27110000000000000000002 /* ConnectionAttemptPolicy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,8 +114,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A27110000000000000000002 /* ConnectionAttemptPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionAttemptPolicy.swift; sourceTree = "<group>"; };
-		A1B2C3D42F8E000100000011 /* ClipboardSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardSync.swift; sourceTree = "<group>"; };
 		27899AC4292FE2A8001ACA33 /* OpenParsec-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OpenParsec-Bridging-Header.h"; sourceTree = "<group>"; };
 		27899AC5292FE2A9001ACA33 /* audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = audio.c; sourceTree = "<group>"; };
 		27899AC6292FE2A9001ACA33 /* audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audio.h; sourceTree = "<group>"; };
@@ -198,6 +196,8 @@
 		914FE2E830ADF562000081AC /* StreamMenuPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamMenuPanel.swift; sourceTree = "<group>"; };
 		914FE34130ADF7F4000081AC /* OpenParsecTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenParsecTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		914FE36E30AE09DD000081AC /* MetricsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricsModel.swift; sourceTree = "<group>"; };
+		A1B2C3D42F8E000100000011 /* ClipboardSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardSync.swift; sourceTree = "<group>"; };
+		A27110000000000000000002 /* ConnectionAttemptPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionAttemptPolicy.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -906,7 +906,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"OpenParsec/Preview Content\"";
-				DEVELOPMENT_TEAM = 3C3YHUUV75;
+				DEVELOPMENT_TEAM = VDDZ9Q7HQ2;
 				ENABLE_PREVIEWS = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = OpenParsec/Info.plist;
@@ -981,10 +981,13 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(inherited) $PROJECT_DIR/Frameworks";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					$PROJECT_DIR/Frameworks,
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenParsec.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OpenParsec";
 			};
@@ -1012,13 +1015,16 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(inherited) $PROJECT_DIR/Frameworks";
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					$PROJECT_DIR/Frameworks,
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenParsec.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OpenParsec";
 			};
 			name = Release;
 		};
-	/* End XCBuildConfiguration section */
+/* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		27E61A89292965FC00FF6563 /* Build configuration list for PBXProject "OpenParsec" */ = {
